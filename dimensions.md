@@ -30,7 +30,7 @@ The stack height is the booster plus the ship: 72.3 m + 52.1 m = 124.4 m.
 
 | Dimension | Value |
 |---|---|
-| Height | 72.3 m (237 ft), including the hot-staging interstage on top |
+| Height | 72.3 m (237 ft), including the hot-staging interstage on top and, judging from photos, the engines below the skirt (see the reference frame further down) |
 | Diameter | 9 m (29.5 ft) |
 | Engines | 33 Raptor 3: 3 in the centre and 10 in an inner ring (these 13 gimbal), plus 20 fixed engines in an outer ring |
 | Grid fins | 3, spaced 90° / 90° / 180° (a T shape seen from above). Each is about 1.5 times the size of the earlier fins, and they sit lower on the booster than before. |
@@ -42,11 +42,12 @@ This section covers where things sit on the V3 booster. Each figure is tagged **
 
 ### Reference frame
 
-- z = 0 is the bottom of the aft skirt and z points up, in metres. This assumes the published 72.3 m runs from the bottom of the skirt to the top of the hot-staging truss and leaves out the engine bells. SpaceX doesn't say exactly what the figure measures.
+- z = 0 is the plane of the engine nozzle exits, and z points up, in metres. The published 72.3 m appears to run from there to the top of the hot-staging truss. In NASASpaceFlight's photo of Booster 20 hanging from the chopsticks, scaled from the 9 m hull, the truss top is about 72.7 m ± 1.5 m above the nozzle exits but only about 69.4 m ± 1.5 m above the bottom edge of the aft skirt (**Estimated**; most of the ± comes from the hull-width scale). The published height therefore appears to include the engines, and the skirt's bottom edge is at about z = 3.3 m.
+- The truss top stays at z = 72.3 m under this datum, so heights measured down from it are unaffected.
 - Azimuth 0° is the rudder grid fin (the stem of the T), increasing counterclockwise seen from above, so the two catch fins sit at 90° and 270°.
 - NASASpaceFlight puts the catch fins on the port and starboard sides, and the third fin on the non-tower side, which is the ship's heat-shield side (**Reported**, NSF May 2025). So azimuth 0° lines up with the ship's tiled windward side and the tower side is at 180°. This fixes how the ship is clocked on the booster.
 - Apart from the grid fins and the ship's heat shield, nothing has been tied to this azimuth frame yet, so the other azimuths below are relative patterns only.
-- Estimated heights were measured in NASASpaceFlight's side-on photo of a V3 booster on Pad 2. The scale comes from the 9 m diameter (about 105 pixels across), counting down from the top of the truss at z = 72.3 m.
+- Estimated heights were measured in two NASASpaceFlight side-on photos: the Pad 2 side view, where the hull is about 105 pixels across, and the B20 lift photo, where it is about 102. Each is scaled from the 9 m diameter, corrected for the camera looking up, and counted down from the top of the truss at z = 72.3 m.
 
 ### Construction
 
@@ -54,7 +55,7 @@ This section covers where things sit on the V3 booster. Each figure is tagged **
 |---|---|
 | Barrel | 36 stacked steel rings: a 25-ring main tank assembly (the 2-ring aft section, five 4-ring LOX barrels and the 3-ring common-dome section) with an 11-ring forward section on top (two CH4 barrels plus the staging ring that holds the forward dome). **Reported** (NSF Starfactory article; Starship SpaceX Wiki, B19) |
 | Order, bottom to top | Aft section with the engines, LOX tank, common dome, CH4 tank, forward dome, hot-staging truss. **Reported** |
-| Ring height | Standard V3 rings are about 2 m tall. **Reported** (NSF Sept 2025, describing the B18.3 forward test tank). If the 36-ring count leaves out the hot-staging ring, 36 rings of about 1.9 m plus the 4 m hot-staging ring come to about 72.3 m, which fits (**Estimated**). Measure before drawing panel lines. |
+| Ring height | Standard V3 rings are about 2 m tall. **Reported** (NSF Sept 2025, describing the B18.3 forward test tank). With the engines counted in the 72.3 m (see the reference frame), the barrel from the skirt's bottom edge (z ≈ 3.3 m) to the base of the 4 m hot-staging ring (z ≈ 68.3 m) is about 65 m. If the 36 rings fill that span, they average about 1.8 m each, close to the 1.83 m (6 ft) rings of earlier boosters (**Estimated**). Measure before drawing panel lines. |
 | Tanks | The CH4 tank is shorter and the LOX tank longer than on V2. **Reported** (NSF). Dome positions and tank lengths aren't published. |
 | Fuel transfer tube | About 50 m tall and 3 m wide, carrying methane from the CH4 tank down through the LOX tank to the engines. **Reported** (NSF). SpaceX calls it roughly the size of a Falcon 9 first stage (**Published**). It is internal. |
 | LOX landing tank | A separate tank that feeds the inner 13 engines, now beside the main LOX tank. **Reported** (NSF; Starship SpaceX Wiki). It is internal. |
@@ -67,18 +68,25 @@ All 33 Raptor 3s mount to one steel thrust plate that carries the thrust of ever
 |---|---|---|---|---|
 | Centre | 3 | Yes | 108° / 108° / 144°, where earlier boosters used 120°. **Reported** (NSF) | Not published |
 | Inner ring | 10 | Yes | 36° if evenly spaced (**Estimated**). On V3 the ring is rotated so no engine sits over the ridge of Pad 2's flame diverter (**Reported**, NSF). | Not published |
-| Outer ring | 20 | No, fixed | 18° if evenly spaced (**Estimated**) | About 4.3 m (**Estimated**, rough; see below) |
+| Outer ring | 20 | No, fixed | 18°, confirmed by fitting the engine positions in the B20 aft close-up (**Estimated**) | About 4.6 m ± 0.25 m, so the engine centres sit roughly on the hull line (**Estimated**; see below) |
 
-- **Nozzle size.** Wikipedia gives a diameter of 1.3 m and a length of 3.1 m for Raptor, without separating Raptor 3 (**Reported**). In NASASpaceFlight's photo of the aft end the booster nozzles look about 1.2 to 1.3 m across (**Estimated**, rough).
-- **Outer-ring fit.** Twenty nozzles about 1.3 m across can't sit side by side inside the 4.5 m hull radius. They need a pitch circle of at least about 4.15 m, which puts their outer edges near 4.8 m. The photos agree: the outer nozzles' edges span roughly 9.9 m, about 0.4 m outside the hull line on each side. That gives a pitch-circle radius of about 4.3 m ± 0.15 m (**Estimated**, read from a downscaled copy of the photo without correcting for perspective).
-- **Protrusion.** Nearly the whole engine, powerhead included, hangs below the skirt in NASASpaceFlight's photos. The nozzle exits are therefore roughly an engine length (about 3 m) below the thrust plate. The drop below the skirt edge hasn't been measured.
-- **Clocking.** How the engine pattern is rotated relative to the grid fins isn't known yet. Until it is, model each group with a free rotation: the centre engines at θc, θc + 108° and θc + 216°, the inner ring at θi + 36°·k, and the outer ring at θo + 18°·k.
+- **Nozzle size.** Wikipedia gives a diameter of 1.3 m and a length of 3.1 m for Raptor, without separating Raptor 3 (**Reported**). In NASASpaceFlight's Booster 20 photos the booster nozzle exits measure about 1.33 m ± 0.1 m across (**Estimated**).
+- **Outer-ring fit.** Twenty nozzles about 1.3 m across can't sit side by side inside the 4.5 m hull radius. They need a pitch circle of at least about 4.15 m, so they must hang partly outside the hull line, and the photos show this.
+  - In the B20 lift photo the outer nozzles' edges span about 10.5 m, 1.165 times the hull width.
+  - In the B20 aft close-up a least-squares fit of nine engine positions gives a pitch-circle radius of 3.45 nozzle diameters, with 18° spacing.
+  - Together these give a pitch-circle radius of about 4.6 m ± 0.25 m, with the nozzle edges reaching about 5.2 m from the axis, roughly 0.7 m outside the hull (**Estimated**).
+  - An earlier rough reading of 4.3 m, taken from a downscaled photo, is superseded.
+- **Protrusion.** Nearly the whole engine, powerhead included, hangs below the skirt. The nozzle exits are about 3.3 m ± 0.4 m below the bottom edge of the skirt's conduit band (**Estimated**, from the B20 lift photo and the B20 aft close-up, which agree to about 0.2 m). With Wikipedia's Raptor length of 3.1 m, the tops of the engines sit about 0.2 m below the skirt edge, which fits NSF's report that the tapered thrust plate makes them protrude further.
+- **Clocking.** How the engine pattern is rotated relative to the grid fins is still open.
+  - In the B20 aft close-up one outer-ring engine sits within about 3° of the camera's line of sight. The camera's direction relative to the fins can only be inferred from other photos, though, and those estimates differ by about 20°, which is more than the 18° outer-ring spacing.
+  - The inner ring and centre trio are hidden behind the outer ring in side views, so their clocking and pitch-circle radii need a bottom-up photo (a launch or catch shot) that also shows a fin.
+  - Until then, model each group with a free rotation: the centre engines at θc, θc + 108° and θc + 216°, the inner ring at θi + 36°·k, and the outer ring at θo + 18°·k.
 - **Relighting.** All Raptor 3s on the booster can relight (**Reported**, Wikipedia), and Pad 2 has no ground spin-start connections for the outer 20 (**Reported**, NSF Pad 2 article).
 
 ### Hot-staging truss
 
 - Sits on top of the CH4 tank and carries the ship. It is an open, N1-style truss, and the ship's exhaust hits the forward dome directly (**Reported**, NSF). The dome is covered by a non-structural steel layer (**Published**).
-- In NASASpaceFlight's photos it is made of pairs of struts in an inverted V, running from a top ring down to brackets on the tank wall. The struts haven't been counted yet.
+- In NASASpaceFlight's photos it is made of pairs of struts in an inverted V, running from a top ring down to brackets on the tank wall. The close-up shows the brackets about 18° apart, which means about 20 brackets and about 40 struts (**Estimated**, ±1 bracket).
 - About 4 m tall, so about z = 68.3 to 72.3 m. NASASpaceFlight describes the hot-staging ring on the B18.3 forward test tank as nearly four metres tall (**Reported**, NSF Sept 2025).
 - The photo measurement gave only about 3.0 m ± 0.3 m from the top of the tank wall to the top of the truss ring (**Estimated**). That may cover just the open truss rather than the whole ring.
 - The actuators that hold the ship to the booster retract after separation (**Published**).
@@ -89,9 +97,12 @@ All 33 Raptor 3s mount to one steel thrust plate that carries the thrust of ever
 - This layout keeps all three fins in the airflow during the glide back and descent (**Reported**, NSF May 2025).
 - They sit on the CH4 tank just below the truss, lower than the old fins, to reduce heating during hot staging (**Published**; the position is **Reported** by NSF).
 - Each fin pivots on a round bearing in a pod welded to the tank wall. The shaft, actuator and fixed structure are inside the CH4 tank (**Published**), so the pod is the only housing outside.
-- SpaceX says they are 50% larger and stronger than the V1/V2 fins (**Published**). Tesla Oracle's estimate of about 7.5 × 3.75 m, against 5 × 2.5 m for the old fins, is unverified. Measured from the fin seen side-on in the side view, each fin reaches about 3.9 m ± 0.3 m out from the hull and is about 1.4 m ± 0.3 m deep from top to bottom (**Estimated**).
+- SpaceX says they are 50% larger and stronger than the V1/V2 fins (**Published**). Tesla Oracle's estimate of about 7.5 × 3.75 m, against 5 × 2.5 m for the old fins, is unverified. Measured in the side view on Pad 2, allowing for the fins being turned about 18° from the camera, each fin reaches about 4.2 m ± 0.3 m out from the hull, is about 1.4 m ± 0.3 m deep from top to bottom, and is about 3.2 m ± 0.4 m wide around the hull (**Estimated**).
 - The rudder fin's internal grid is angled so that air passes through it at a better angle (**Reported**, NSF).
-- Height: in the side view, the top of the fin facing the camera is at about z = 66.5 to 67 m, and the top of the fin pointing away from the tower at about z = 64.5 m (**Estimated**). The fin pointing away from the tower is the rudder, so it would sit about 2 m below the catch fins. A second NASASpaceFlight photo doesn't clearly confirm this, so check it before modelling.
+- Height: all three fins sit at the same height, to within about 0.3 m. Their frames span about z = 64.6 to 66.1 m ± 0.5 m (**Estimated**).
+  - These figures come from the side view on Pad 2, corrected for perspective using the ellipse of the truss ring, which shows the camera looking up about 14°.
+  - They were cross-checked on NASASpaceFlight's close-up of the fins, where a weld seam's curvature shows the camera looking up about 24°. In that photo the rudder and the near catch fin sit at the same height.
+  - The 2 m drop reported earlier for the rudder was a perspective error: in photos taken from the ground, fins on the near side of the booster look higher than those on the far side.
 
 ### Catch and lift points
 
@@ -104,7 +115,7 @@ All 33 Raptor 3s mount to one steel thrust plate that carries the thrust of ever
 - A single external raceway runs from the top about halfway down the booster, then goes inside and branches into one of the taller chines. It carries the flight termination charges, so the separate FTS raceways of V1 and V2 are gone (**Reported**, NSF).
 - NSF's description puts the raceway on the side opposite the rudder fin, so around 180° (**Reported**, implied). Its width hasn't been measured.
 - There are four chines on the LOX tank, holding avionics, COPVs and batteries (**Reported**, NSF May 2025 and May 2026). As on V1/V2, they give some lift during descent (**Reported**, Wikipedia).
-- On V3 the two chines on the raceway side are taller and closer together, and the two on the rudder-fin side are shorter and farther apart. The wider spacing gives more lift during the glide back (**Reported**, NSF May 2025 and May 2026). Their azimuths and lengths haven't been measured. In the side view one chine's top end is at roughly z = 34 to 35 m (**Estimated**, rough; which chine it is isn't known).
+- On V3 the two chines on the raceway side are taller and closer together, and the two on the rudder-fin side are shorter and farther apart. The wider spacing gives more lift during the glide back (**Reported**, NSF May 2025 and May 2026). The taller, raceway-side chine's chamfered top is at about z = 36.8 m ± 0.6 m (it agrees in the Pad 2 side view and the B20 lift photo). The shorter, rudder-side chine's top is at about z = 28.8 m ± 0.8 m, from the B20 lift photo only. Both end at about z = 5.7 m (**Estimated**). Their azimuths haven't been measured.
 - Their bottom ends are cut at an angle and stop just above the aft conduit band, as seen in NASASpaceFlight's photo of B19's aft end.
 
 ### Aft skirt, quick disconnects and hold-downs
@@ -155,7 +166,7 @@ SpaceX doesn't publish these, so they will need to be measured from reference ph
 - the exact height of the V3 interstage truss
 - the booster's engine pitch-circle radii, and how the engine pattern is clocked relative to the grid fins
 - the Raptor 3 nozzle exit size on the booster, and how far the nozzles hang below the skirt
-- the grid fins' heights (including whether the rudder fin sits lower) and the catch-point hardware
+- the exact grid fin sizes and heights, and the catch-point hardware
 - the number of struts in the V3 truss
 - the azimuths and lengths of the chines and the raceway
 - the positions of the booster's QD plates, hold-down fittings, vents, cameras and antennas
@@ -182,4 +193,4 @@ Rough estimates for some of these are in "Super Heavy V3 in detail".
 - [NASASpaceFlight, Sept 2025: Eye on the future, as SpaceX prepare Pad 2 and Block 3 at Starbase](https://www.nasaspaceflight.com/2025/09/spacex-prepare-pad-2-block-3-starbase/): standard rings about 2 m tall and the nearly 4 m hot-staging ring on the B18.3 forward test tank.
 - [Starship SpaceX Wiki: Booster 19](https://starship-spacex.fandom.com/wiki/Booster_19_(B19)) and [Super Heavy Booster](https://starship-spacex.fandom.com/wiki/Super_Heavy_Booster): the 25 + 11 ring stack, the catch points on the grid fins and the LOX landing tank position.
 - [Tesla Oracle, Aug 2025](https://www.teslaoracle.com/2025/08/16/spacex-reveals-grid-fins-of-the-next-gen-starship-super-heavy-booster/): an unverified estimate of the V3 grid fin size.
-- NASASpaceFlight photos used for the estimates: [side view on Pad 2](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/COLLEEN-DSC09751-wmarked-scaled.jpg), [truss and grid fins](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8394-wmarked-scaled.jpg), [aft end with engines](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8810-wmarked-scaled.jpg) and [B19's aft end without engines](https://www.nasaspaceflight.com/wp-content/uploads/2026/02/COLLEEN_-_CRL00220-scaled.jpg).
+- NASASpaceFlight photos used for the estimates: [Booster 20 lifted onto the mount](https://www.nasaspaceflight.com/wp-content/uploads/2026/07/Booster-20-Being-Lifted-onto-the-Mount-scaled.jpg) and [Booster 20's aft end close-up](https://www.nasaspaceflight.com/wp-content/uploads/2026/07/Booster-20-Engines-scaled.jpg) (both from [Booster 20 completes record duration Static Fire](https://www.nasaspaceflight.com/2026/07/booster-20-record-static-fire/), July 2026), [side view on Pad 2](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/COLLEEN-DSC09751-wmarked-scaled.jpg), [truss and grid fins](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8394-wmarked-scaled.jpg), [aft end with engines](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8810-wmarked-scaled.jpg) and [B19's aft end without engines](https://www.nasaspaceflight.com/wp-content/uploads/2026/02/COLLEEN_-_CRL00220-scaled.jpg).
