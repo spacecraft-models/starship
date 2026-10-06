@@ -79,7 +79,7 @@ All 33 Raptor 3s mount to one steel thrust plate that carries the thrust of ever
   - In the B20 aft close-up a least-squares fit of nine engine positions gives a pitch-circle radius of 3.45 nozzle diameters, with 18° spacing.
   - Together these give a pitch-circle radius of about 4.6 m ± 0.25 m, with the nozzle edges reaching about 5.2 m from the axis, roughly 0.7 m outside the hull (**Estimated**).
   - An earlier rough reading of 4.3 m, taken from a downscaled photo, is superseded.
-- **Protrusion.** Nearly the whole engine, powerhead included, hangs below the skirt. The nozzle exits are about 3.3 m ± 0.4 m below the bottom edge of the skirt's conduit band (**Estimated**, from the B20 lift photo and the B20 aft close-up, which agree to about 0.2 m). With Wikipedia's Raptor length of 3.1 m, the tops of the engines sit about 0.2 m below the skirt edge, which fits NSF's report that the tapered thrust plate makes them protrude further.
+- **Protrusion.** Nearly the whole engine, powerhead included, hangs below the skirt. The nozzle exits are about 3.3 m ± 0.4 m below the bottom edge of the skirt's conduit band (**Estimated**, from the B20 lift photo and the B20 aft close-up, which agree to about 0.2 m). Raptor 3 measures about 2.9 m from the nozzle exit to the top (see "Raptor engines"). So the tops of the outer engines sit about 0.4 m below the skirt edge, which fits NSF's report that the tapered thrust plate makes them protrude further.
 - **Layout of the three groups.** Two bottom views of the glowing nozzle exits agree on how the groups sit relative to each other: B20 at Flight 13 liftoff, and B21 in flight on Flight 14. In each, the outer ring fits an ellipse to within 0.3% to 3%, with 18° spacing (**Estimated**).
   - Each inner-ring engine sits midway between two outer-ring engines, at 9° ± 3° from them.
   - Each centre engine sits midway between two inner-ring engines.
@@ -344,12 +344,178 @@ Domes (**Estimated**, rough). The weld lines don't show from outside, so these c
 
 ## Raptor engines
 
+This section covers the Raptor 3 engines that V3 flies. Each figure is tagged **Published** (SpaceX), **Reported** (credible press, Wikipedia or the Starship SpaceX Wiki) or **Estimated** (measured or derived from photos, with the method given). Gaps are left as gaps and listed under "Not published by SpaceX".
+
 These sizes are useful for modelling the engine bells.
 
 | Engine | Size |
 |---|---|
-| Sea-level Raptor | About 3.1 m (10 ft) long, with a 1.3 m (4.3 ft) nozzle exit |
-| Raptor Vacuum (ship only) | Nozzle exit about 2.4 m (7.9 ft) |
+| Sea-level Raptor | About 3.1 m (10 ft) long, with a 1.3 m (4.3 ft) nozzle exit. The 3.1 m is Wikipedia's figure and isn't tied to a version; Raptor 3 measures about 2.9 m from the nozzle exit to the top (see Specifications). |
+| Raptor Vacuum (ship only) | Nozzle exit about 2.4 m (7.9 ft); about 4.5 m long (**Estimated**, see Specifications) |
+
+### Variants and where they fly
+
+| Variant | Where on V3 | Gimbal | Notes |
+|---|---|---|---|
+| Raptor 3, sea-level, gimballed (NSF calls the ship's ones "Raptor Center", RC) | Booster: the centre 3 and the inner ring of 10. Ship: the 3 centre engines | Yes | Steered by electric actuators. SpaceX replaced the hydraulic system from Booster 9 on (**Reported**, Wikipedia) |
+| Raptor 3, sea-level, fixed | Booster: the outer ring of 20 | No | See below |
+| Raptor 3 Vacuum (RVac) | Ship: the 3 outer engines | No | Larger nozzle extension for use in vacuum |
+
+- **Gimbal range.** The gimballed engines swing about ±15° on both axes (**Reported**, Everyday Astronaut). SpaceX released video of a Raptor firing at a 15° gimbal angle in September 2026, without saying which version (**Published**).
+- **The fixed booster engines.** SpaceX hasn't said whether Raptor 3's outer 20 are a separate build.
+  - On V1 and V2, the outer 20 had no start system of their own. The launch mount spun them up, so they couldn't relight (**Reported**, Wikipedia).
+  - On V3 all 33 relight, and Pad 2 has no ground spin-start for the outer 20 (**Reported**, Wikipedia and NSF). So the fixed engines now carry their own start system.
+  - They differ from the gimballed engines at least in their mount, which has no gimbal or actuators (**Estimated**).
+- In 2021 Musk said every booster Raptor would be the same engine, dropping a planned "Raptor Boost" variant without gimbal (**Reported**, Teslarati).
+
+### Specifications
+
+Raptor 2 is given only where SpaceX published the figure for both versions.
+
+| Figure | Raptor 3 sea-level | Raptor 3 Vacuum | Raptor 2 |
+|---|---|---|---|
+| Thrust | 280 tf in testing (**Published**, Aug 2024 and the April 2024 presentation). About 250 tf nominal as flown on V3 (**Reported**, Wikipedia, May 2026) | 306 tf (**Published**, April 2024 presentation). About 275 tf nominal on V3 (**Reported**, Wikipedia, May 2026) | Sea-level 230 tf, vacuum 258 tf (**Published**) |
+| Specific impulse | 350 s in vacuum (**Published**; SpaceX doesn't say which, but it is the vacuum value, see below). About 333 s at sea level (**Estimated**, from the thrust and the exit area) | About 380 s in vacuum (**Reported**) | Sea-level engine, 347 s in vacuum (**Published**; SpaceX doesn't say which) |
+| Mass, engine only | 1,525 kg (**Published**) | Not published | 1,630 kg (**Published**) |
+| Mass with vehicle-side commodities and hardware | 1,720 kg (**Published**) | Not published | 2,875 kg (**Published**) |
+| Chamber pressure | About 330 bar (**Reported**, Wikipedia; the Starship SpaceX Wiki gives 350 bar) | Same chamber | |
+| Mixture ratio | About 3.6, oxygen to methane by mass (**Reported**, not tied to a version) | Same | |
+| Throttle range | 40% to 100% (**Reported**, not tied to a version) | | |
+| Expansion ratio | 34.34 (**Reported**, a 2019 figure) | 80 (**Reported**, not tied to a version); probably nearer 95 to 105 on RVac 3 (**Estimated**, see below) | |
+| Throat | About 0.23 m across inside, the same on both (**Estimated**, see below). The outside of the cooling jacket there measures about 0.32 m. | Same | |
+| Main combustion chamber | About 0.42 m across outside (**Estimated**, SpaceX's photo) | Same | |
+| Nozzle exit | 1.3 m (**Reported**). Booster 20's exits measure 1.33 m ± 0.1 m (**Estimated**). | 2.4 m (**Reported**, a 2018 design figure). SpaceX's May 2025 photo of RVac 3 gives about 2.3 m ± 0.2 m (**Estimated**). | |
+| Length, nozzle exit to top | About 2.9 m ± 0.15 m (**Estimated**) | About 4.5 m ± 0.3 m (**Estimated**) | |
+| Gimbal | ±15° (**Reported**) | Fixed | |
+
+- **Specific impulse.** SpaceX lists 350 s for the sea-level Raptor 3 and 347 s for the sea-level Raptor 2 without saying whether they are vacuum or sea-level figures. Wikipedia's infobox gives the sea-level Raptor's 350 s as its vacuum value and 327 s at sea level (**Reported**). The figures agree:
+  - At sea level, air pressure on a 1.3 m exit takes off about 13.7 tf of thrust.
+  - For Raptor 2, 230 tf at sea level is about 244 tf in vacuum, so 347 s in vacuum becomes about 327 s at sea level.
+  - The same sum for Raptor 3 gives about 333 s at sea level from 280 tf and 350 s.
+- **Throat.** The throat size comes from the thrust, the chamber pressure and an ideal nozzle. Both 280 tf at 350 bar and 250 tf at 330 bar give about 0.23 m to 0.24 m.
+  - With an expansion ratio of 34.34, that throat gives a sea-level exit of about 1.35 m, which matches the photos.
+  - An expansion ratio of 80 would give an RVac exit of only about 2.1 m. So with a 2.3 m to 2.4 m exit, RVac 3's ratio is probably nearer 95 to 105.
+- **Raptor 3 length.** SpaceX's August 2024 photo shows Raptor 1, 2 and 3 standing side by side. Scaled to a 1.3 m exit, Raptor 3 measures 2.91 m from the plane of the nozzle exit to the top of the engine. A 1.33 m to 1.39 m exit would make it 3.0 m to 3.1 m.
+- **RVac 3 length.** Two photos give it, assuming the RVac shares the sea-level engine's chamber and powerhead:
+  - SpaceX's May 2025 photo of RVac 3 serial 8 next to sea-level Raptor 3 serial 6 gives about 4.4 m.
+  - NASASpaceFlight's McGregor Live view of RVac 2 serial 580 lying on a trailer gives a length of about 1.95 times its exit diameter, about 4.5 m to 4.7 m.
+- **A larger-nozzle RVac.** A development RVac 3 with a noticeably larger nozzle appeared in McGregor's parade in September 2026 (**Reported**, KWTX). Musk has said a Raptor 3 or 4 vacuum version with a "giant nozzle" will come later (**Reported**, Starship SpaceX Wiki). The ships flying now aren't known to carry it.
+
+### Shape for modelling
+
+**Sea-level Raptor 3** (**Estimated**).
+- Measured from SpaceX's August 2024 photo of Raptor 3 serial 1, standing beside Raptors 1 and 2. Edge scans of the silhouette against the light wall give the outline, scaled to the 1.3 m exit (573 pixels per metre).
+- h is the height above the plane of the nozzle exit. The radius is measured from the engine's axis, which comes from the symmetric bell.
+- Accuracy: ± 0.02 m on the bell and ± 0.03 m elsewhere. If the exit is really 1.33 m to 1.39 m, scale everything up 2% to 7%.
+
+| h (m) | Radius (m) | Part |
+|---|---|---|
+| 0 | 0.65 | Nozzle exit, 1.3 m across |
+| 0.1 | 0.64 | Bell |
+| 0.2 | 0.62 | Bell |
+| 0.3 | 0.60 | Bell |
+| 0.4 | 0.58 | Bell |
+| 0.5 | 0.55 | Bell |
+| 0.6 | 0.52 | Bell |
+| 0.7 | 0.485 | Bell |
+| 0.8 | 0.45 | Bell |
+| 0.9 | 0.41 | Bell |
+| 1.0 | 0.37 | Bell |
+| 1.05 | 0.35 | Top of the visible bell |
+| 1.09 to 1.14 | 0.40 to 0.42 | Manifold ring around the nozzle, where the big duct joins |
+| 1.15 to 1.45 | Hidden | Upper nozzle, hidden behind ducts on both sides. It narrows smoothly to the throat. |
+| 1.5 | 0.16 | Throat, outside of the cooling jacket. The bore is about 0.115 m in radius. |
+| 1.6 to 1.75 | 0.21 | Main combustion chamber, with ribbed bands |
+| 1.8 | 0.27 | Chamber flaring into the manifold disk |
+| 1.85 to 1.98 | 0.29 | Wide manifold disk |
+| 2.0 to 2.06 | 0.20 to 0.25 | Ring of bolts: the flange at the base of the powerhead |
+| 2.1 to 2.4 | 0.17 to 0.23 | Powerhead body, on the plain side |
+| 2.42 to 2.5 | 0.23 to 0.25 | Upper powerhead, with three round ports facing out |
+| 2.56 to 2.60 | 0.25 | Top plate, about 0.50 m across |
+| 2.60 to 2.67 | 0.20 | Ring of about 16 to 20 studs standing up from the top plate, on a circle about 0.39 m across (stud centres) |
+| 2.63 to 2.75 | 0.14 | Domed hub inside the stud ring, about 0.28 m across |
+| 2.75 to 2.91 | 0.11 | Central top port, about 0.22 m across, with a thin cover in the photo. The engine's top is at 2.91 m. |
+
+- The powerhead isn't round. In this view, one side carries the equipment:
+  - a large duct runs from the powerhead down to the nozzle's manifold ring. It reaches 0.66 m to 0.74 m from the axis between h = 1.9 m and 2.3 m, runs down at 0.57 m to 0.60 m from h = 1.5 m to 1.85 m, and curves in to join the ring at h ≈ 1.1 m;
+  - a capped port about 0.16 m across faces up at h ≈ 2.35 m, about 0.5 m from the axis;
+  - a valve block sits between the port and the duct.
+- On the opposite side, a smaller pipe loop reaches 0.29 m from the axis between h = 1.15 m and 1.45 m.
+- So across the powerhead this view is about 1.0 m wide: 0.29 m on the plain side and 0.74 m on the duct side. The photos don't show the engine from 90° round, so the width in that direction isn't measured.
+- SpaceX's close-up of Raptor 3 serial 1 on the McGregor test stand shows the same parts in more detail: the ribbed chamber, the two ducts and the manifold ring.
+
+**Raptor 3 Vacuum** (**Estimated**, coarse).
+- Measured from SpaceX's May 2025 photo of RVac 3 serial 8, which stands about level with sea-level Raptor 3 serial 6.
+- Scaled so the exit is 2.3 m, from serial 6 at about the same distance. Multiply by 1.04 to use the 2.4 m figure instead.
+- Accuracy: ± 0.1 m across and ± 0.15 m in height.
+- The engine's top is cut off at the photo's edge, so the upper part follows the sea-level engine's.
+
+| h (m) | Diameter (m) | Part |
+|---|---|---|
+| 0 | 2.30 | Nozzle exit |
+| 0.3 | 2.37 | Stiffening ring near the exit; the wall itself is about 2.28 m across |
+| 0.85 | 2.05 | Band round the extension |
+| 0 to 1.8 | | Lower extension: lighter grey, with close-spaced vertical ribs |
+| 1.8 | 1.46 to 1.49 | Junction ring between the extension and the dark upper bell |
+| 1.9 | 1.35 | Dark upper bell |
+| 2.1 | 1.19 | Dark upper bell |
+| 2.3 | 1.04 | Dark upper bell |
+| 2.5 | 0.88 | Dark upper bell |
+| 2.7 | 0.66 | Ring round the upper bell |
+| About 3.0 | 0.32 outside | Throat |
+| 3.0 to 4.4 | | Chamber and powerhead, as on the sea-level engine. Add 1.5 m to the sea-level table's heights from the throat up. |
+| About 4.4 | | Top of the engine |
+
+- The lower extension is nearly a cone, about 12° from the axis. It bulges slightly: about 2.05 m across at 0.85 m above the exit, where a straight cone would give about 1.9 m.
+- The dark upper bell flares much faster, about 24° from the axis.
+- Wikipedia describes the RVac's nozzle as an extended, regeneratively cooled nozzle (**Reported**). Whether the ribbed lower part is also cooled isn't published.
+
+### Attachment points
+
+- **Top mount.** In SpaceX's photos the only structural interface at the top of Raptor 3 is the studded top plate. So the engine probably hangs from it (**Estimated**):
+  - the top plate, about 0.50 m across, is 2.56 m to 2.60 m above the nozzle exit;
+  - a ring of about 16 to 20 studs stands up from the plate to about 2.67 m, on a circle about 0.39 m across at the stud centres;
+  - inside the ring, a domed hub about 0.28 m across rises to about 2.75 m;
+  - the central port continues to 2.91 m.
+- On the RVac the same plate sits about 1.5 m higher, at roughly 4.1 m above its exit (**Estimated**).
+- The gimballed engines pivot on a gimbal mount. The fixed outer 20 and the RVacs are mounted rigidly (**Reported**). Where exactly the pivot sits isn't published.
+- **Shielding.** On V3 only the thrust vector control (TVC) actuators and the gimbal mounts appear to be shielded (**Reported**, NSF May 2025). SpaceX says shielding covers the surface between the engines and the TVC hardware on the booster's inner 13 (**Published**).
+- **TVC actuators.** They are electric (**Reported**, Wikipedia). Their count and attachment points on Raptor 3 aren't published.
+  - A two-axis gimbal is normally driven by two actuators about 90° apart.
+  - A pair of clevis lugs on the powerhead's plain side, at about h = 2.1 m and about 0.2 m from the axis, may be one actuator's attachment (**Estimated**, tentative).
+  - The second actuator's attachment would be round the other side, out of view.
+- **Propellant inlets.** Two ports are capped for handling in SpaceX's photo (**Estimated**):
+  - the central top port, about 0.22 m across and facing up, at h = 2.73 m to 2.91 m;
+  - a port about 0.16 m across, also facing up, on the duct side at h ≈ 2.35 m, about 0.5 m from the axis.
+  - They are probably the oxygen and methane inlets, with the oxygen entering through the centre of the mount; that isn't published. Raptor 2, in the same photo, shows the same pair of capped ports, its covers in red and blue.
+- **Other connections.**
+  - Igniters: torch igniters fire in both preburners. The main chamber has had no igniter since Raptor 2 (**Reported**, Wikipedia).
+  - Spin-start: on V3 every engine starts and relights with its own system, the booster's outer 20 included (see Variants).
+  - Pneumatics, power and data: their connections aren't documented. Raptor 3 moves most of its plumbing and sensors inside the engine's structure (**Reported**, Wikipedia), so few lines show on the outside.
+- **RVac mounting.** The RVacs don't gimbal.
+  - On V1 and V2 they mounted directly to the aft dome (**Reported**, Wikipedia).
+  - On V3 they sit slightly recessed into the LOX tank. The attic covers only their tops, under a metal roof over a flattened thrust puck (**Reported**, NSF May 2026).
+  - How the large nozzle is braced isn't documented. RVac 3 serial 8 shows no struts on the engine. Its nozzle is stiffened by the junction ring 1.8 m above the exit, the band at 0.85 m and the ring near the exit (**Estimated**).
+
+### Where the engines sit on the vehicles
+
+**Booster.** z = 0 is the outer ring's nozzle exits; see the booster's reference frame. These heights are **Estimated**, ± 0.2 m. They combine the engine's 2.9 m length with the measured exit heights.
+
+| Group | Nozzle exits | Top plate and studs | Top of the engine |
+|---|---|---|---|
+| Outer ring (20, fixed) | z = 0 | z ≈ 2.6 m to 2.7 m | z ≈ 2.9 m |
+| Inner ring (10, gimballed) | z ≈ −0.2 m | z ≈ 2.4 m to 2.5 m | z ≈ 2.7 m |
+| Centre (3, gimballed) | z ≈ −0.5 m | z ≈ 2.1 m to 2.2 m | z ≈ 2.4 m |
+
+- The skirt's bottom edge is at about z = 3.3 m. So the engine tops sit about 0.4 m (outer ring) to 0.9 m (centre) below it, and the thrust plate tapers down to meet them. NSF reports the plate is tapered (**Reported**).
+
+**Ship.** z = 0 is the aft skirt's bottom edge.
+- The engines' exit heights aren't measured, since no photo shows the ship's engines from below. Nothing has been seen below the skirt, so the exits are at or above z = 0.
+- RVacs: with exits at the skirt edge, a 4.5 m RVac would put its top plate at about z = 4.1 m and its top at about z = 4.5 m, inside the aft section (AX, z = 0 to 7.3 m).
+  - The aft dome is estimated at about z = 6 m ± 1.5 m, so that top would sit below the dome's rim.
+  - For the RVacs to be recessed into the LOX tank, as reported, one of two things must hold. Either the aft dome dips to about z = 4.5 m or lower at the RVacs' radius (up to about 3.2 m from the axis), or the RVac exits sit higher than the skirt edge.
+  - Neither is measured, so this is a constraint on the dome's depth or the exit height, not a confirmation (**Estimated**).
+- Sea-level engines: they hang from the thrust puck under the aft dome and are about 2.9 m long. Their exit heights and the puck's height aren't measured.
 
 ## Earlier versions
 
@@ -382,6 +548,7 @@ SpaceX doesn't publish these, so they will need to be measured from reference ph
 - the ship's flap planforms, hinge lines and deflection angles
 - the ship's exact tile line, and the positions and sizes of its payload door, catch and lift points, QD plate, docking ports and vents
 - the ship's dome positions and tank lengths, and the number and azimuths of the actuators that hold it to the booster
+- Raptor 3's length, nozzle contour and powerhead outline; the RVac 3's nozzle exit, expansion ratio and length; where the TVC actuators attach; and where the propellant inlets and other connections sit
 
 Rough estimates for many of these are in "Super Heavy V3 in detail" and "Starship V3 in detail".
 
@@ -389,9 +556,9 @@ Rough estimates for many of these are in "Super Heavy V3 in detail" and "Starshi
 ## Sources
 
 - [SpaceX Starship (Wikipedia)](https://en.wikipedia.org/wiki/SpaceX_Starship): full-stack heights for Block 1, 2 and 3, and the booster and ship heights.
-- [SpaceX Super Heavy (Wikipedia)](https://en.wikipedia.org/wiki/SpaceX_Super_Heavy): the Block 3 booster height of 72.3 m, the 69 m and 71 m Block 1/2 heights, the 1.8 m vented interstage, the engine layout, and the Block 3 grid fin count, spacing and size. Also the catch points and internal actuators on the fins, the two quick disconnects, Raptor 3 relighting, the V1/V2 thrust puck, and the V1/V2 chines and vents.
+- [SpaceX Super Heavy (Wikipedia)](https://en.wikipedia.org/wiki/SpaceX_Super_Heavy): the Block 3 booster height of 72.3 m, the 69 m and 71 m Block 1/2 heights, the 1.8 m vented interstage, the engine layout, and the Block 3 grid fin count, spacing and size. Also the catch points and internal actuators on the fins, the two quick disconnects, Raptor 3 relighting, the V1/V2 thrust puck, and the V1/V2 chines and vents. Also the electric thrust vector control used from Booster 9 on, and the ground spin-start of the V1/V2 outer engines.
 - [SpaceX Starship (spacecraft) (Wikipedia)](https://en.wikipedia.org/wiki/SpaceX_Starship_(spacecraft)): the V1 and V2 ship heights, flap layout and angles, the 17 m span and the heat shield. Also the ship's 21 rings of 1.83 m, header tanks, payload bay, Starlink door, RCS, vents and engine mounting.
-- [SpaceX Raptor (Wikipedia)](https://en.wikipedia.org/wiki/SpaceX_Raptor): engine length, nozzle exit diameters and the switch from Raptor 2 to Raptor 3.
+- [SpaceX Raptor (Wikipedia)](https://en.wikipedia.org/wiki/SpaceX_Raptor): engine length, nozzle exit diameters and the switch from Raptor 2 to Raptor 3. Also Raptor 3's nominal thrust on V3, the chamber pressures, expansion ratios, masses, throttle range and mixture ratio, the RVac's regeneratively cooled nozzle, the preburner torch igniters, and Raptor 3's internal plumbing.
 - [Spaceflight Now, Sept 21, 2026](https://spaceflightnow.com/2026/09/21/spacexs-super-heavy-booster-arrives-at-pad-ahead-of-first-orbital-starship-launch/): the Flight 14 booster is 72 m (236 ft) tall and 9 m across, and the ship is 52 m (171 ft) tall.
 - [NASASpaceFlight, May 2026: Super Heavy Block 3](https://www.nasaspaceflight.com/2026/05/super-heavy-block-3-booster-future/): the open hot-staging truss, the 3 larger grid fins in a T formation, and Raptor 3 on the booster. Also the catch fins and rudder fin, the raceway and chines, the thrust plate, the engine clocking and shielding, the split quick disconnect, the aft conduits, and the 50 m × 3 m transfer tube.
 - [Next Spaceflight: Starship](https://nextspaceflight.com/rockets/174/): stack heights of 124.4 m for V3, 123.1 m for V2 and 121.3 m for V1.
@@ -410,3 +577,11 @@ Rough estimates for many of these are in "Super Heavy V3 in detail" and "Starshi
 - Checked for the ship's engine layout as a V2 stand-in; none gives a usable bottom view: [Ship 37 on the Starship SpaceX Wiki](https://starship-spacex.fandom.com/wiki/Ship_37_(S37)), NASASpaceFlight's [Ship 35](https://www.nasaspaceflight.com/2025/05/ship-35-sf-spacex-has-fleet-vehicles-flight/) and [Ship 37](https://www.nasaspaceflight.com/2025/08/ship-37-spin-prime-engine-swap/) articles (2025), SpaceX's [2022 photos of Ship 24's engines](https://interestingengineering.com/innovation/spacex-mars-raptor-engine-setup), SpaceX's [Ship 25 static-fire photos](https://www.space.com/spacex-starship-ship-25-engine-test-fire-photos) and SpaceX's [Flight 14 hot-staging video](https://starlust.org/video/w130-mury20fo/).
 - NASASpaceFlight photos used for the engine layout and clocking: [B20's engines at Flight 13 liftoff](https://www.nasaspaceflight.com/wp-content/uploads/2026/07/Booster-20-Raptor-Engines-at-Liftoff-scaled.jpg) and [B21 and Ship 41 in flight on Flight 14](https://www.nasaspaceflight.com/wp-content/uploads/2026/09/DSC05253-wmarked.jpg), both from [Ship 41 Makes it to Orbit, Booster 21 Nearly Perfect](https://www.nasaspaceflight.com/2026/09/starship-flight-14-orbit/) (Sept 2026).
 - NASASpaceFlight photos used for the other estimates: [Booster 20 lifted onto the mount](https://www.nasaspaceflight.com/wp-content/uploads/2026/07/Booster-20-Being-Lifted-onto-the-Mount-scaled.jpg) and [Booster 20's aft end close-up](https://www.nasaspaceflight.com/wp-content/uploads/2026/07/Booster-20-Engines-scaled.jpg) (both from [Booster 20 completes record duration Static Fire](https://www.nasaspaceflight.com/2026/07/booster-20-record-static-fire/), July 2026), [side view on Pad 2](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/COLLEEN-DSC09751-wmarked-scaled.jpg), [truss and grid fins](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8394-wmarked-scaled.jpg), [aft end with engines](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8810-wmarked-scaled.jpg) and [B19's aft end without engines](https://www.nasaspaceflight.com/wp-content/uploads/2026/02/COLLEEN_-_CRL00220-scaled.jpg).
+- SpaceX's Raptor 3 reveal photos (Aug 2024), as hosted on the [Starship SpaceX Wiki's Raptor 3 page](https://starship-spacex.fandom.com/wiki/Raptor_3): [Raptors 1, 2 and 3 side by side](https://static.wikia.nocookie.net/starship-spacex/images/5/51/240803-Raptor3-update-SpaceX-Twitter-a.jpg), used for the sea-level profile, and [Raptor 3 on the McGregor test stand](https://static.wikia.nocookie.net/starship-spacex/images/4/44/240803-Raptor3-update-SpaceX-Twitter-d.jpg). The published figures (280 tf, 350 s, 1,525 kg and 1,720 kg, and the Raptor 1 and 2 comparison) are quoted in [NASASpaceFlight, Aug 2024: Flight 5 and 6 preparations as SpaceX reveals Raptor 3](https://www.nasaspaceflight.com/2024/08/flight-5-6-preparations-raptor-3/). The wiki page also gives the 350 bar chamber pressure and the 250 tf and 275 tf nominal thrust.
+- [SpaceX's April 2024 presentation slide of the Raptor versions](https://static.wikia.nocookie.net/starship-spacex/images/6/6a/Raptor-engines-Variants-06-April-2024-SpaceX-Twitter.png), via the [Starship SpaceX Wiki's Raptor Engine page](https://starship-spacex.fandom.com/wiki/Raptor_Engine): sea-level and vacuum thrust for Raptors 1, 2 and 3 (306 tf for RVac 3). The same page quotes Musk on a later vacuum version with a "giant nozzle".
+- [SpaceX's May 2025 slide photo of RVac 3 serial 8 and sea-level Raptor 3 serial 6](https://www.nasaspaceflight.com/wp-content/uploads/2025/05/Raptor-3.jpg), used for the RVac profile, from [The Future of the Starship Program, Block 3 and Mars](https://www.nasaspaceflight.com/2025/05/future-starship-block-3-mars/) (NSF, May 2025). That article also gives the "Raptor Center" (RC) name and the shielded TVC actuators and gimbal mounts.
+- [NASASpaceFlight, Aug 2025: Raptor 3 testing ramps up at SpaceX McGregor](https://www.nasaspaceflight.com/2025/08/raptor-3-ramps-spacex-mcgregor/), with its [McGregor Live view of RVac 2 serial 580](https://www.nasaspaceflight.com/wp-content/uploads/2025/08/NSF-2025-08-12-02-40-47-269.jpg), used for the RVac's length-to-exit ratio.
+- [Everyday Astronaut: Raptor 1 vs Raptor 2](https://everydayastronaut.com/spacex-raptor-engine-comparison/): the ±15° gimbal on both axes.
+- [SpaceX video of a Raptor firing at a 15° gimbal angle](https://starlust.org/video/spacex-raptor-15-degree-gimbal-test-mp4-mujo5zz4/) (via Starlust, Sept 27, 2026).
+- [Teslarati, July 2021](https://www.teslarati.com/spacex-elon-musk-starship-raptor-upgrades-2021/): Musk saying all booster Raptors, fixed or gimballed, would be the same engine.
+- [KWTX, Sept 21, 2026](https://www.kwtx.com/2026/09/21/spacex-raptor-rocket-engines-roll-down-main-street-mcgregor-founders-day-parade/): the development RVac 3 with a larger nozzle in McGregor's parade.
