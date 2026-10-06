@@ -44,10 +44,35 @@ fwd_hinge_az = 98;
 fwd_hinge_z = [43300, 48600];
 fwd_tip_z = [42400, 44400];
 fwd_tip_out = 3700;
-// Raceways (estimated): degrees either side of the leeward centreline, bottom and top, and width
-raceway_az = 15;
+// Raceways (estimated): degrees either side of the leeward centreline at the top and at the lower end,
+// bottom and top, and width
+raceway_az = [15, 13];
 raceway_z = [2400, 35000];
 raceway_w = 600;
+// Payload bay door (the Starlink "Pez dispenser"), estimated: a long slot with rounded ends,
+// centred on the leeward side. Azimuths of its ends, and its bottom and top.
+door_az = [124, 236];
+door_z = [35300, 36200];
+// The four passive (drogue) docking ports, estimated: two on the payload bay just below the door,
+// and two on the aft section either side of the QD plate. Each is a steel housing tube whose axis
+// points straight out from the leeward side (all four are parallel), with a dark drogue cone set in
+// its mouth. Each entry is [azimuth, centre height, how far the mouth stands out from the hull along
+// the port's centreline]; the aft housings look a little longer in the photos.
+docking_ports = [[140, 34500, 400], [220, 34500, 400], [156, 2550, 550], [204, 2550, 550]];
+// The housing's diameter
+port_d = 800;
+// Width of the notch cut up into the bottom of the mouth, where the drogue's tab sits
+port_notch = 200;
+// The drogue cone's rim diameter and its central hole, and the tab hanging from its rim into the
+// notch: width and how far it reaches below the rim
+drogue_d = 600;
+drogue_hole = 70;
+drogue_tab = [190, 140];
+// The QD plate for propellant transfer, on the leeward centreline (estimated): its bottom and top,
+// its width, and the height of its two round propellant connectors
+qd_z = [2600, 3500];
+qd_w = 800;
+qd_connector_z = 3000;
 // Nozzle exit diameters of the sea-level Raptor 3 and the Raptor 3 Vacuum
 raptor_exit = 1300;
 rvac_exit = 2400;
@@ -60,11 +85,22 @@ tip_tiles = 1500;
 aft_flap_bottom = 0;
 aft_flap_thickness = 500;
 fwd_flap_thickness = 350;
-// How far the aerocovers stand off the hull, and the height of their lower point
-aerocover_out = 800;
+// The aerocovers: how far they stand off the hull, where they start, and the height up to which they
+// keep their full width before narrowing to the point at the top of the hinge
+aerocover_out = 250;
 aerocover_bottom = 4500;
+aerocover_full = 9000;
 // How far the raceways stand off the hull
 raceway_out = 250;
+// The door is flush on the ship, so it is drawn as a groove round its outline, this wide and deep
+door_seam = 150;
+// How deep the drogue cones' funnels go, and how far they sit back from the housing's mouth
+drogue_depth = 250;
+drogue_recess = 30;
+// How far the QD plate and its guide rails stand off the hull, and the connectors' diameter
+qd_out = 120;
+qd_rail_out = 250;
+qd_connector_d = 220;
 // The engine layout, which dimensions.md leaves open: azimuths and pitch-circle radii of the
 // 3 sea-level engines and the 3 vacuum engines, and the height of the vacuum engines' nozzle exits.
 // All six hang from a flat roof at the vacuum engines' top plates, so the sea-level exits sit higher.
@@ -85,6 +121,10 @@ steel = [0.78, 0.79, 0.81];
 raceway_steel = [0.66, 0.67, 0.69];
 tiles = [0.2, 0.2, 0.22];
 bay_grey = [0.5, 0.5, 0.52];
+seam_dark = [0.25, 0.25, 0.27];
+fitting_grey = [0.55, 0.56, 0.58];
+housing_grey = [0.42, 0.43, 0.46];
+drogue_grey = [0.3, 0.34, 0.39];
 
 function az(a) = a + 90; // dimensions.md azimuth to OpenSCAD's angle from +X
 
@@ -145,17 +185,15 @@ function aft_flap() = let(span = (aft_flap_span_total - diameter) / 2) [
     [R - flap_embed, aft_flap_bottom], [R + span, aft_flap_bottom], [R + span, aft_flap_tip_top],
     [R, aft_flap_root_top], [R - flap_embed, aft_flap_root_top]];
 
-// The tiled fairing over the +X aft flap's hinge. It bulges round toward leeward (-Y) as far as
-// aerocover_edge and narrows to a point at each end, the top one over the hinge.
+// The tiled fairing over the +X aft flap's hinge: a low shell hugging the hull from the hinge round
+// toward leeward (-Y) as far as aerocover_edge. It keeps that width up to aerocover_full and then
+// narrows to a point over the hinge at the top of the flap's root.
 module aerocover() {
     a = aerocover_edge - 90; // degrees round the hull from the hinge
-    z0 = aerocover_bottom;
-    z1 = aft_flap_root_top;
     hull() {
-        rotate([0, 0, -a / 2]) translate([R, 0, z0]) cube(1, center = true);
-        for (f = [0.35, 0.65]) rotate([0, 0, -a / 2]) translate([R, 0, z0 + f * (z1 - z0)])
-            linear_extrude(1) scale([aerocover_out, R * sin(a / 2)]) circle(1, $fn = 48);
-        rotate([0, 0, -a / 8]) translate([R, 0, z1]) cube(1, center = true);
+        for (z = [aerocover_bottom, aerocover_full]) rotate([0, 0, -a]) rotate_extrude(angle = a, $fn = segments)
+            translate([R - 100, z]) square([100 + aerocover_out, 1]);
+        translate([R - 100, -50, aft_flap_root_top - 1]) cube([100 + aerocover_out / 2, 100, 1]);
     }
 }
 
@@ -183,14 +221,73 @@ module fwd_flap_x() {
     }
 }
 
-// A raceway at dimensions.md azimuth a: a strip standing off the hull, with a rounded top
-module raceway(a) rotate([0, 0, az(a)]) translate([R - 100, 0, raceway_z[0]]) rotate([90, 0, 90])
-    linear_extrude(raceway_out + 100) hull() {
-        translate([-raceway_w / 2, 0]) square([raceway_w, 1]);
-        translate([0, raceway_z[1] - raceway_z[0] - raceway_w / 2]) circle(d = raceway_w, $fn = 32);
-    }
+// A raceway: a strip standing off the hull with a rounded top, at dimensions.md azimuth a_top at
+// the top and a_bottom at its lower end
+module raceway(a_top, a_bottom) hull() {
+    rotate([0, 0, az(a_bottom)]) translate([R - 100, 0, raceway_z[0]]) rotate([90, 0, 90])
+        linear_extrude(raceway_out + 100) translate([-raceway_w / 2, 0]) square([raceway_w, 1]);
+    rotate([0, 0, az(a_top)]) translate([R - 100, 0, raceway_z[1] - raceway_w / 2]) rotate([90, 0, 90])
+        linear_extrude(raceway_out + 100) circle(d = raceway_w, $fn = 32);
+}
 
-// The six Raptors hang from the engine bay's roof, each with its big duct facing outward
+// The door's slot shape grown by g all round, as a solid reaching from radius r0 to r1
+module door_slot(g, r0, r1) {
+    half = (door_z[1] - door_z[0]) / 2;
+    zc = door_z[0] + half;
+    ends = [door_az[0] + half / R * 180 / PI, door_az[1] - half / R * 180 / PI]; // centres of the rounded ends
+    rotate([0, 0, az(ends[0])]) rotate_extrude(angle = ends[1] - ends[0], $fn = segments)
+        translate([r0, zc - half - g]) square([r1 - r0, 2 * (half + g)]);
+    for (a = ends) rotate([0, 0, az(a)]) translate([r0, 0, zc]) rotate([0, 90, 0])
+        cylinder(h = r1 - r0, r = half + g, $fn = 32);
+}
+
+// The groove round the door's outline, to cut from the hull
+module door_seam() difference() {
+    door_slot(door_seam / 2, R - door_seam, R + 100);
+    door_slot(-door_seam / 2, R - door_seam - 50, R + 150);
+}
+
+// A passive (drogue) docking port, p = [azimuth, centre height, reach]: a steel housing tube pointing
+// straight out from the leeward side (-Y), with a notch cut up into the bottom of its mouth. A dark
+// drogue cone sits in the mouth, narrowing to a central hole, and its tab hangs down through the
+// notch. The housing runs on back into the hull, where starship() trims it.
+module docking_port(p) {
+    x = -R * sin(p[0]);
+    bore = drogue_d / 2 + 10;
+    len = drogue_depth + 100; // length of the drogue's body
+    // Local z runs from the mouth back toward the hull (+Y), and local -y is down
+    translate([x, -sqrt(R * R - x * x) - p[2], p[1]]) rotate([-90, 0, 0]) rotate([0, 0, 180]) {
+        color(housing_grey) difference() {
+            cylinder(h = p[2] + 1500, d = port_d, $fn = 48);
+            translate([0, 0, -1]) linear_extrude(drogue_recess + len + 1) {
+                circle(r = bore, $fn = 48);
+                translate([-port_notch / 2, -port_d]) square([port_notch, port_d]);
+            }
+        }
+        color(drogue_grey) translate([0, 0, drogue_recess]) {
+            difference() {
+                cylinder(h = len, r = bore + 1, $fn = 48);
+                translate([0, 0, -1]) cylinder(h = drogue_depth + 1, r1 = drogue_d / 2 - 20, r2 = drogue_hole / 2, $fn = 48);
+                cylinder(h = drogue_depth + 60, r = drogue_hole / 2, $fn = 16);
+            }
+            translate([-drogue_tab[0] / 2, -(drogue_d / 2 + drogue_tab[1]), 0])
+                cube([drogue_tab[0], drogue_tab[1] + 50, len]);
+        }
+    }
+}
+
+// The QD plate on the leeward centreline: a backing plate between two guide rails, with the two
+// round propellant connectors facing out
+module qd_plate() rotate([0, 0, az(180)]) translate([R - 100, 0, qd_z[0]]) {
+    h = qd_z[1] - qd_z[0];
+    translate([0, -qd_w / 2, 0]) cube([100 + qd_out, qd_w, h]);
+    for (y = [-qd_w / 2, qd_w / 2 - 60]) translate([0, y, 0]) cube([100 + qd_rail_out, 60, h]);
+    for (y = [-0.17, 0.17] * qd_w) translate([100 + qd_out - 1, y, qd_connector_z - qd_z[0]])
+        rotate([0, 90, 0]) cylinder(h = 120, d = qd_connector_d, $fn = 32);
+}
+
+// The six Raptors hang from the engine bay's roof, each with its front facing outward as on the
+// booster, so their coolant pipes run round the ship rather than out from it
 module engines() {
     for (a = sl_az) rotate([0, 0, az(a)]) translate([sl_ring_r, 0, roof - raptor_sl_mount(raptor_exit)])
         raptor_sl(raptor_exit, nozzle_wall, $fn = 48);
@@ -199,13 +296,22 @@ module engines() {
 }
 
 module starship() {
-    body();
+    difference() {
+        body();
+        color(seam_dark) door_seam();
+    }
+    // The docking ports' housings are trimmed where they run back inside the hull's wall
+    difference() {
+        for (p = docking_ports) docking_port(p);
+        translate([0, 0, -1]) cylinder(r = R - 150, h = height, $fn = segments);
+    }
+    color(fitting_grey) qd_plate();
     color(tiles) both_sides() {
         panel(aft_flap(), -aft_flap_thickness / 2, aft_flap_thickness);
         aerocover();
     }
     both_sides() fwd_flap_x();
-    color(raceway_steel) for (a = [180 - raceway_az, 180 + raceway_az]) raceway(a);
+    color(raceway_steel) for (s = [-1, 1]) raceway(180 + s * raceway_az[0], 180 + s * raceway_az[1]);
     engines();
 }
 

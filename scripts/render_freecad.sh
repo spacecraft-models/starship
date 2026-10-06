@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Render a FreeCAD document from three angles, export an STL and build a summary sheet.
 # Usage: scripts/render_freecad.sh MODEL.FCStd [OUTDIR]
-# OUTDIR defaults to renders/<model name>. FreeCAD is a snap on Marge and can't see /tmp,
+# OUTDIR defaults to renders/<model name>. FreeCAD installed as a snap can't see /tmp,
 # so MODEL and OUTDIR must be under /home.
 set -euo pipefail
 [ $# -ge 1 ] || { echo "usage: $0 MODEL.FCStd [OUTDIR]" >&2; exit 2; }
