@@ -33,9 +33,13 @@ aft_flap_span_total = 17000;
 // and runs down to the top of the upright tip edge at aft_flap_tip_top (estimated).
 aft_flap_root_top = 15000;
 aft_flap_tip_top = 8600;
-// The tiled hinge fairings (aerocovers) on the aft flaps reach round to this azimuth on the leeward
-// side, and come to a point at the top of the hinge (estimated)
-aerocover_edge = 126;
+// The aft flaps taper from their rounded root to the outboard edge: thickness at each (estimated)
+aft_flap_thickness = [700, 350];
+// Each aft flap's hinge line is covered by a tiled "static aero" strip, topped by a streamlined "leading
+// edge aero cap" over the top of the hinge (estimated): the strip's width, and the cap's height above
+// the flap's root. The cap is as wide as the strip at its base and tapers to a rounded tip.
+aft_static_aero_w = 700;
+aft_cap_h = 1600;
 // Angle between the forward flaps' planes, measured across the leeward side
 fwd_flap_angle = 140;
 // Forward flaps (estimated): the hinge's azimuth and the heights of its ends on the nose, the
@@ -83,13 +87,11 @@ nose_tip_r = 1000;
 tip_tiles = 1500;
 // Bottom of the aft flaps, and the flaps' thicknesses
 aft_flap_bottom = 0;
-aft_flap_thickness = 500;
 fwd_flap_thickness = 350;
-// The aerocovers: how far they stand off the hull, where they start, and the height up to which they
-// keep their full width before narrowing to the point at the top of the hinge
-aerocover_out = 250;
-aerocover_bottom = 4500;
-aerocover_full = 9000;
+// How far the aft static aero strip stands off the hull, and the forward flaps' smaller static aero
+// strip: its width and how far it stands off the nose
+aft_static_aero_out = 350;
+fwd_static_aero = [500, 250];
 // How far the raceways stand off the hull
 raceway_out = 250;
 // The door is flush on the ship, so it is drawn as a groove round its outline, this wide and deep
@@ -149,7 +151,6 @@ function tip_cap(n = 8) = [for (i = [1 : n]) let(a = tip_a * (1 - i / n))
 bay_inside = [[0, roof], [R - skirt_wall, roof], [R - skirt_wall, 0]];
 tiled_from = nose_len - tip_tiles; // height on the nose above which it is tiled all the way round
 assert(tiled_from < cap_h, "tip_tiles must reach below the rounded tip");
-assert(aerocover_bottom > roof, "the aerocovers must start above the engine bay's roof");
 nose_lower = concat([[0, nose_base]], ogive(0, tiled_from, 32), [[0, nose_base + tiled_from]]);
 nose_top = concat([[0, nose_base + tiled_from]], ogive(tiled_from, cap_h, 8), tip_cap());
 whole = concat(bay_inside, [[R, 0]], ogive(0, cap_h, 40), tip_cap());
@@ -177,23 +178,44 @@ module both_sides() {
     mirror([1, 0, 0]) children();
 }
 
-// A flat panel outlined by [r, z] points in the XZ plane, from y = y0 to y0 + t
-module panel(outline, y0, t) translate([0, y0 + t, 0]) rotate([90, 0, 0]) linear_extrude(t) polygon(outline);
+// The corners of a convex, counterclockwise [r, z] outline moved in by d, so that a hull of spheres of
+// radius d on them fills the outline exactly
+function inset(p, d) = let(n = len(p)) [for (i = [0 : n - 1]) let(
+    a = p[(i + n - 1) % n], b = p[i], c = p[(i + 1) % n],
+    u = (b - a) / norm(b - a), v = (c - b) / norm(c - b),
+    nu = [-u[1], u[0]], nv = [-v[1], v[0]]) // inward normals of the edges either side
+    b + d / (1 + nu * nv) * (nu + nv)];
+
+// A flap 2d thick in the XZ plane with the given [r, z] outline and every edge rounded, as on the
+// real flaps
+module rounded_plate(outline, d) hull() for (q = inset(outline, d)) translate([q[0], 0, q[1]]) sphere(d, $fn = 16);
 
 // The aft flap on +X (dimensions.md's 270°), tiled on both faces
-function aft_flap() = let(span = (aft_flap_span_total - diameter) / 2) [
-    [R - flap_embed, aft_flap_bottom], [R + span, aft_flap_bottom], [R + span, aft_flap_tip_top],
-    [R, aft_flap_root_top], [R - flap_embed, aft_flap_root_top]];
+module aft_flap() {
+    span = (aft_flap_span_total - diameter) / 2;
+    r0 = aft_flap_thickness[0] / 2;
+    r1 = aft_flap_thickness[1] / 2;
+    // It tapers from its root to its outboard edge, and both are rounded, as is the swept leading edge
+    // between them, so it is the hull of a rounded edge at each end. The root sits on the hull's line.
+    hull() for (e = [[R, r0, aft_flap_root_top], [R + span - r1, r1, aft_flap_tip_top]]) {
+        translate([e[0], 0, aft_flap_bottom]) cylinder(h = e[2] - aft_flap_bottom - e[1], r = e[1], $fn = 24);
+        translate([e[0], 0, e[2] - e[1]]) sphere(e[1], $fn = 24);
+    }
+}
 
-// The tiled fairing over the +X aft flap's hinge: a low shell hugging the hull from the hinge round
-// toward leeward (-Y) as far as aerocover_edge. It keeps that width up to aerocover_full and then
-// narrows to a point over the hinge at the top of the flap's root.
-module aerocover() {
-    a = aerocover_edge - 90; // degrees round the hull from the hinge
+// The tiled static aero strip along the +X aft flap's hinge line, and the leading edge aero cap over
+// the top of the hinge. The strip is an elliptic cylinder half-buried in the hull, with its back inside
+// the skirt's wall.
+module aft_hinge_cover() {
+    ar = (aft_static_aero_out + 0.8 * skirt_wall) / 2; // the strip's radial half-depth
+    module section(h) translate([R + aft_static_aero_out - ar, 0, 0]) scale([ar, aft_static_aero_w / 2, 1])
+        cylinder(h = h, r = 1, $fn = 32);
+    translate([0, 0, aft_flap_bottom]) section(aft_flap_root_top - aft_flap_bottom);
+    // The cap carries the strip's section up from the top of the flap's root and tapers into the hull,
+    // continuing the slope of the flap's leading edge, to a rounded tip
     hull() {
-        for (z = [aerocover_bottom, aerocover_full]) rotate([0, 0, -a]) rotate_extrude(angle = a, $fn = segments)
-            translate([R - 100, z]) square([100 + aerocover_out, 1]);
-        translate([R - 100, -50, aft_flap_root_top - 1]) cube([100 + aerocover_out / 2, 100, 1]);
+        translate([0, 0, aft_flap_root_top - 1]) section(1);
+        translate([R + 50, 0, aft_flap_root_top + aft_cap_h - 200]) sphere(200, $fn = 24);
     }
 }
 
@@ -209,15 +231,24 @@ function fwd_flap() = let(
     [p0 - flap_embed * n, p0, [rt, fwd_tip_z[0]], [rt, fwd_tip_z[1]], p1, p1 - flap_embed * n];
 
 // The flap turns about its hinge toward leeward (-Y) so the two flaps' planes end up fwd_flap_angle
-// apart. Its windward face is tiled and its leeward face is bare steel.
+// apart. Its windward face is tiled and its leeward face is bare steel. A small tiled static aero strip,
+// fixed to the nose, runs along the hinge.
 module fwd_flap_x() {
     f = fwd_flap();
     p0 = [f[1][0], 0, f[1][1]];
     p1 = [f[4][0], 0, f[4][1]];
+    zm = (p0[2] + p1[2]) / 2;
     turn = (360 - fwd_flap_angle) / 2 - fwd_hinge_az;
-    rotate([0, 0, az(-fwd_hinge_az)]) translate(p0) rotate(a = -turn, v = p1 - p0) translate(-p0) {
-        color(tiles) panel(f, 0, fwd_flap_thickness / 2);
-        color(steel) panel(f, -fwd_flap_thickness / 2, fwd_flap_thickness / 2);
+    rotate([0, 0, az(-fwd_hinge_az)]) {
+        // The strip follows the nose's surface through the hinge's ends and middle
+        color(tiles) hull() for (p = [p0, [nose_r(zm - nose_base), 0, zm], p1]) translate(p)
+            scale([fwd_static_aero[1], fwd_static_aero[0] / 2, fwd_static_aero[1]]) sphere(1, $fn = 24);
+        translate(p0) rotate(a = -turn, v = p1 - p0) translate(-p0) {
+            for (side = [[tiles, 0], [steel, -1]]) color(side[0]) intersection() {
+                rounded_plate(f, fwd_flap_thickness / 2);
+                translate([0, side[1] * 2000, nose_base]) cube([2 * R, 2000, nose_len]); // the windward or leeward half
+            }
+        }
     }
 }
 
@@ -306,9 +337,13 @@ module starship() {
         translate([0, 0, -1]) cylinder(r = R - 150, h = height, $fn = segments);
     }
     color(fitting_grey) qd_plate();
+    // The aft flaps' rounded roots are trimmed where they would reach into the engine bay
     color(tiles) both_sides() {
-        panel(aft_flap(), -aft_flap_thickness / 2, aft_flap_thickness);
-        aerocover();
+        difference() {
+            aft_flap();
+            translate([0, 0, -1]) cylinder(r = R - skirt_wall / 2, h = roof + 1, $fn = segments);
+        }
+        aft_hinge_cover();
     }
     both_sides() fwd_flap_x();
     color(raceway_steel) for (s = [-1, 1]) raceway(180 + s * raceway_az[0], 180 + s * raceway_az[1]);
