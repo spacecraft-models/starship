@@ -17,6 +17,35 @@ model_scale = 1; // [1:1000]
 segments = 128;
 // Engine nozzle walls. 0 makes the nozzles solid, which suits prints smaller than about 1:100.
 nozzle_wall = 40;
+// Full draws the engines' plumbing; Simple draws each engine as one turned shape, bulked out to stand
+// in for it
+engine_detail = 2; // [1:Simple, 2:Full]
+// The thinnest part allowed on the print, in mm at print size. The flaps, and the skirt's wall and
+// the engines' necks when they show, are thickened to at least this. 0 keeps all of them true to size.
+min_feature = 0; // [0:0.1:3]
+// Fills the engine bay solid up to its roof, hiding the engines, so the ship stands on a flat base
+fill_engine_bay = false;
+// A hole up the middle of the skirt's bottom for a pin that stacks the ship on the booster, in mm at
+// print size: its diameter (0 for none) and depth. It needs fill_engine_bay to cut into.
+pin_d = 0; // [0:0.1:5]
+pin_depth = 6; // [1:0.5:20]
+// Draws the two catch pins on the nose. Off leaves them out; they stand out less than a millimetre at
+// 1:460, and the 1:460 print preset leaves them out.
+catch_pins = true;
+// For printing bigger than the printer in pieces: heights to cut the ship into sections at, in
+// full-size mm as in this file. Empty keeps it whole. Pins of pin_d line the sections up at each cut.
+section_z = [];
+// What to draw: 0 the whole ship; 1 and up one section, standing on a flat cut face for printing (the
+// lowest section upside down, so its engines print upward, the others upright); -1 the loose parts,
+// laid flat.
+section = 0; // [-1:1:6]
+// Leaves the forward flaps off the nose, each with a tab along its root that plugs into a slot along
+// its hinge, so they can print flat as loose parts
+loose_flaps = false;
+// The tabs on loose parts, in mm at print size: how far each reaches into the hull, and the gap round
+// it in its slot
+tab_depth = 3; // [1:0.5:10]
+fit_clearance = 0.15; // [0:0.05:0.5]
 
 /* [From dimensions.md] */
 height = 52100;
@@ -27,6 +56,9 @@ ring_h = 1830;
 // Tile line in degrees either side of windward, on the barrel and on the nosecone (estimated)
 tile_line = 105;
 nose_tile_line = 128;
+// Height where the tile line steps out from the barrel's to the nosecone's, level with the catch pins
+// (estimated). It can't go below the nosecone's base.
+nose_tile_step = 39500;
 // Tip to tip across the aft flaps
 aft_flap_span_total = 17000;
 // The aft flaps are hinged at 90° and 270°. Their leading edge leaves the hull at aft_flap_root_top
@@ -77,6 +109,19 @@ drogue_tab = [190, 140];
 qd_z = [2600, 3500];
 qd_w = 800;
 qd_connector_z = 3000;
+// The two catch pins the tower's chopsticks lift and catch the ship by, on the nose just above its
+// base (estimated). Each is a tiled fairing standing out from the hull, with its top sloping down from
+// the hull to a short upright outer end, sides sloping out to the hull, and a level underside. Their
+// azimuths; the underside and where the top meets the hull; how far the outer end stands off the
+// hull, and its height; and the fairing's width where its underside meets the hull, and across its
+// top and outer end.
+catch_az = [90, 270];
+catch_z = [39000, 39900];
+catch_out = 440;
+catch_end = 150;
+catch_w = [1500, 550];
+// The steel pad under each catch pin's outer end, which rests on the chopstick: width and height
+catch_pad = [330, 100];
 // Nozzle exit diameters of the sea-level Raptor 3 and the Raptor 3 Vacuum
 raptor_exit = 1300;
 rvac_exit = 2400;
@@ -103,6 +148,8 @@ drogue_recess = 30;
 qd_out = 120;
 qd_rail_out = 250;
 qd_connector_d = 220;
+// How far the catch pins' steel pads reach in under the fairing from its outer end
+catch_pad_depth = 300;
 // The engine layout, which dimensions.md leaves open: azimuths and pitch-circle radii of the
 // 3 sea-level engines and the 3 vacuum engines, and the height of the vacuum engines' nozzle exits.
 // All six hang from a flat roof at the vacuum engines' top plates, so the sea-level exits sit higher.
@@ -115,6 +162,9 @@ skirt_wall = 300;
 
 /* [Hidden] */
 R = diameter / 2;
+min_t = min_feature * model_scale; // the thinnest part allowed, in model millimetres
+bay_wall = max(skirt_wall, min_t);   // the skirt's wall round the open engine bay
+wall = nozzle_wall > 0 ? max(nozzle_wall, min_t) : 0; // the nozzles' walls, thickened for printing
 nose_base = rings * ring_h; // where the nosecone leaves the cylinder
 nose_len = height - nose_base;
 roof = rvac_exit_z + raptor_vac_mount(rvac_exit, raptor_exit); // the engine bay's roof
@@ -148,10 +198,14 @@ function tip_cap(n = 8) = [for (i = [1 : n]) let(a = tip_a * (1 - i / n))
 
 // [r, z] outlines of the hull, turned about the Z axis. The engine bay is open below: its outline
 // runs out along the roof and down the inside of the skirt's wall.
-bay_inside = [[0, roof], [R - skirt_wall, roof], [R - skirt_wall, 0]];
+bay_inside = [[0, roof], [R - bay_wall, roof], [R - bay_wall, 0]];
 tiled_from = nose_len - tip_tiles; // height on the nose above which it is tiled all the way round
 assert(tiled_from < cap_h, "tip_tiles must reach below the rounded tip");
-nose_lower = concat([[0, nose_base]], ogive(0, tiled_from, 32), [[0, nose_base + tiled_from]]);
+step_h = max(0, nose_tile_step - nose_base); // height of the tile step above the nose's base
+assert(step_h < tiled_from, "nose_tile_step must be below the nose's fully tiled tip");
+// The nose below the tile step, tiled like the barrel, and the nose above it
+nose_band = concat([[0, nose_base]], ogive(0, step_h, 4), [[0, nose_base + step_h]]);
+nose_lower = concat([[0, nose_base + step_h]], ogive(step_h, tiled_from, 32), [[0, nose_base + tiled_from]]);
 nose_top = concat([[0, nose_base + tiled_from]], ogive(tiled_from, cap_h, 8), tip_cap());
 whole = concat(bay_inside, [[R, 0]], ogive(0, cap_h, 40), tip_cap());
 
@@ -169,6 +223,7 @@ module body()
         tiled_turn([[R - skin, 0], [R, 0], [R, nose_base], [R - skin, nose_base]], tile_line);
         color(bay_grey) rotate_extrude($fn = segments)
             polygon(concat(bay_inside, [[R - skin, 0], [R - skin, nose_base], [0, nose_base]]));
+        if (step_h > 0) tiled_turn(nose_band, tile_line);
         tiled_turn(nose_lower, nose_tile_line);
         color(tiles) rotate_extrude($fn = segments) polygon(nose_top);
     } else rotate_extrude($fn = segments) polygon(whole);
@@ -193,8 +248,8 @@ module rounded_plate(outline, d) hull() for (q = inset(outline, d)) translate([q
 // The aft flap on +X (dimensions.md's 270°), tiled on both faces
 module aft_flap() {
     span = (aft_flap_span_total - diameter) / 2;
-    r0 = aft_flap_thickness[0] / 2;
-    r1 = aft_flap_thickness[1] / 2;
+    r0 = max(aft_flap_thickness[0], min_t) / 2;
+    r1 = max(aft_flap_thickness[1], min_t) / 2;
     // It tapers from its root to its outboard edge, and both are rounded, as is the swept leading edge
     // between them, so it is the hull of a rounded edge at each end. The root sits on the hull's line.
     hull() for (e = [[R, r0, aft_flap_root_top], [R + span - r1, r1, aft_flap_tip_top]]) {
@@ -221,14 +276,15 @@ module aft_hinge_cover() {
 
 // The forward flap on +X (dimensions.md's 262°) as [r, z] points in its hinge's plane. The hinge
 // runs straight up the nose, and the upright tip edge is fwd_tip_out from the hinge line at its middle.
-function fwd_flap() = let(
+// The root sinks embed into the nose; a loose flap's tab reaches deeper.
+function fwd_flap(embed = flap_embed) = let(
     p0 = [nose_r(fwd_hinge_z[0] - nose_base), fwd_hinge_z[0]],
     p1 = [nose_r(fwd_hinge_z[1] - nose_base), fwd_hinge_z[1]],
     u = (p1 - p0) / norm(p1 - p0), // up the hinge
     n = [u[1], -u[0]],             // out from it
     zm = (fwd_tip_z[0] + fwd_tip_z[1]) / 2,
     rt = p0[0] + (fwd_tip_out - (zm - p0[1]) * n[1]) / n[0])
-    [p0 - flap_embed * n, p0, [rt, fwd_tip_z[0]], [rt, fwd_tip_z[1]], p1, p1 - flap_embed * n];
+    [p0 - embed * n, p0, [rt, fwd_tip_z[0]], [rt, fwd_tip_z[1]], p1, p1 - embed * n];
 
 // The flap turns about its hinge toward leeward (-Y) so the two flaps' planes end up fwd_flap_angle
 // apart. Its windward face is tiled and its leeward face is bare steel. A small tiled static aero strip,
@@ -243,14 +299,56 @@ module fwd_flap_x() {
         // The strip follows the nose's surface through the hinge's ends and middle
         color(tiles) hull() for (p = [p0, [nose_r(zm - nose_base), 0, zm], p1]) translate(p)
             scale([fwd_static_aero[1], fwd_static_aero[0] / 2, fwd_static_aero[1]]) sphere(1, $fn = 24);
-        translate(p0) rotate(a = -turn, v = p1 - p0) translate(-p0) {
+        if (!loose_flaps) translate(p0) rotate(a = -turn, v = p1 - p0) translate(-p0) {
             for (side = [[tiles, 0], [steel, -1]]) color(side[0]) intersection() {
-                rounded_plate(f, fwd_flap_thickness / 2);
+                rounded_plate(f, max(fwd_flap_thickness, min_t) / 2);
                 translate([0, side[1] * 2000, nose_base]) cube([2 * R, 2000, nose_len]); // the windward or leeward half
             }
         }
     }
 }
+
+// Places a forward flap's [r, z] outline as fwd_flap_x() does, turned about its hinge on +X
+module fwd_flap_place() {
+    f = fwd_flap();
+    p0 = [f[1][0], 0, f[1][1]];
+    p1 = [f[4][0], 0, f[4][1]];
+    turn = (360 - fwd_flap_angle) / 2 - fwd_hinge_az;
+    rotate([0, 0, az(-fwd_hinge_az)]) translate(p0) rotate(a = -turn, v = p1 - p0) translate(-p0) children();
+}
+
+// A loose forward flap in its hinge's plane, with its root carried on into the nose as a tab
+module loose_flap() rounded_plate(fwd_flap(tab_depth * model_scale), max(fwd_flap_thickness, min_t) / 2);
+
+// The slot along a forward flap's hinge that the loose flap's tab plugs into: the tab grown by the
+// clearance all round, carried out through the static aero strip
+module fwd_flap_slot() fwd_flap_place() {
+    f = fwd_flap();
+    c = fit_clearance * model_scale;
+    u = (f[4] - f[1]) / norm(f[4] - f[1]);              // up the hinge
+    n = [u[1], -u[0]];                                   // out from it
+    d = tab_depth * model_scale + c;
+    t = max(fwd_flap_thickness, min_t) + 2 * c;
+    translate([0, t / 2, 0]) rotate([90, 0, 0]) linear_extrude(t) polygon([
+        f[1] - d * n - c * u, f[1] + 600 * n - c * u, f[4] + 600 * n + c * u, f[4] - d * n + c * u]);
+}
+
+// The two loose forward flaps laid flat side by side for printing. They are mirror images, but each
+// is the same both ways through its thickness, so two copies of one flap make the pair.
+module loose_flaps_flat() {
+    f = fwd_flap(tab_depth * model_scale);
+    x0 = min([for (p = f) p[0]]) - 500;
+    z0 = min([for (p = f) p[1]]);
+    w = max([for (p = f) p[0]]) - x0 + 1000;
+    t = max(fwd_flap_thickness, min_t);
+    for (i = [0, 1]) translate([i * w - x0, -z0, t / 2]) rotate([-90, 0, 0]) color(tiles) loose_flap();
+}
+
+// Holes for the pins that line up the sections at each cut: two at different radii, so the sections
+// only go together one way round, each reaching pin_depth into both sides
+module joint_pin_holes() for (z = section_z, p = [[0, 0.5], [180, 0.3]])
+    rotate([0, 0, az(p[0])]) translate([p[1] * R, 0, z - pin_depth * model_scale])
+        cylinder(h = 2 * pin_depth * model_scale, d = pin_d * model_scale, $fn = 24);
 
 // A raceway: a strip standing off the hull with a rounded top, at dimensions.md azimuth a_top at
 // the top and a_bottom at its lower end
@@ -317,37 +415,86 @@ module qd_plate() rotate([0, 0, az(180)]) translate([R - 100, 0, qd_z[0]]) {
         rotate([0, 90, 0]) cylinder(h = 120, d = qd_connector_d, $fn = 32);
 }
 
+// A catch pin on +X (dimensions.md's 270°): a tiled fairing whose top slopes down from the hull to a
+// short upright outer end, with sides sloping out to the hull, a level underside and a steel pad under
+// the outer end. Its back is a flat plate inside the curve of the nose, so its top is carried on down
+// the same slope to meet the hull at catch_z[1].
+module catch_pin() {
+    rh = nose_r(catch_z[1] - nose_base); // the nose's radius where the top meets it
+    back = rh - 80;
+    x1 = R + catch_out;
+    slope = (catch_z[1] - catch_z[0] - catch_end) / (x1 - rh);
+    top = catch_z[1] + (rh - back) * slope;
+    color(tiles) hull() {
+        translate([back, -catch_w[0] / 2, catch_z[0]]) cube([1, catch_w[0], 1]);
+        translate([back, -catch_w[1] / 2, top - 1]) cube([1, catch_w[1], 1]);
+        translate([x1 - 1, -catch_w[1] / 2, catch_z[0]]) cube([1, catch_w[1], catch_end]);
+    }
+    color(fitting_grey) translate([x1 - catch_pad_depth, -catch_pad[0] / 2, catch_z[0] - catch_pad[1]])
+        cube([catch_pad_depth, catch_pad[0], catch_pad[1] + 1]);
+}
+
 // The six Raptors hang from the engine bay's roof, each with its front facing outward as on the
 // booster, so their coolant pipes run round the ship rather than out from it
 module engines() {
     for (a = sl_az) rotate([0, 0, az(a)]) translate([sl_ring_r, 0, roof - raptor_sl_mount(raptor_exit)])
-        raptor_sl(raptor_exit, nozzle_wall, $fn = 48);
+        raptor_sl(raptor_exit, wall, engine_detail, min_t / 2, $fn = 48);
     for (a = rvac_az) rotate([0, 0, az(a)]) translate([rvac_ring_r, 0, rvac_exit_z])
-        raptor_vac(rvac_exit, nozzle_wall, raptor_exit, $fn = 48);
+        raptor_vac(rvac_exit, wall, raptor_exit, engine_detail, min_t / 2, $fn = 48);
 }
 
-module starship() {
-    difference() {
-        body();
-        color(seam_dark) door_seam();
-    }
-    // The docking ports' housings are trimmed where they run back inside the hull's wall
-    difference() {
-        for (p = docking_ports) docking_port(p);
-        translate([0, 0, -1]) cylinder(r = R - 150, h = height, $fn = segments);
-    }
-    color(fitting_grey) qd_plate();
-    // The aft flaps' rounded roots are trimmed where they would reach into the engine bay
-    color(tiles) both_sides() {
+// The ship. For printing, the engine bay can be filled up to its roof, which leaves the engines out,
+// and a hole for the stacking pin cut up into the middle of the bottom (or of the roof, when the bay
+// is open), with the joint pins' holes at any section cuts and the slots for loose flaps.
+module starship() difference() {
+    union() {
         difference() {
-            aft_flap();
-            translate([0, 0, -1]) cylinder(r = R - skirt_wall / 2, h = roof + 1, $fn = segments);
+            body();
+            color(seam_dark) door_seam();
         }
-        aft_hinge_cover();
+        // The docking ports' housings are trimmed where they run back inside the hull's wall
+        difference() {
+            for (p = docking_ports) docking_port(p);
+            translate([0, 0, -1]) cylinder(r = R - 150, h = height, $fn = segments);
+        }
+        color(fitting_grey) qd_plate();
+        if (catch_pins) for (a = catch_az) rotate([0, 0, az(a)]) catch_pin();
+        // The aft flaps' rounded roots are trimmed where they would reach into the engine bay
+        color(tiles) both_sides() {
+            difference() {
+                aft_flap();
+                translate([0, 0, -1]) cylinder(r = R - skirt_wall / 2, h = roof + 1, $fn = segments);
+            }
+            aft_hinge_cover();
+        }
+        both_sides() fwd_flap_x();
+        color(raceway_steel) for (s = [-1, 1]) raceway(180 + s * raceway_az[0], 180 + s * raceway_az[1]);
+        if (fill_engine_bay) color(bay_grey) cylinder(r = R - bay_wall + 1, h = roof + 1, $fn = segments);
+        else engines();
     }
-    both_sides() fwd_flap_x();
-    color(raceway_steel) for (s = [-1, 1]) raceway(180 + s * raceway_az[0], 180 + s * raceway_az[1]);
-    engines();
+    if (pin_d > 0) {
+        bottom = fill_engine_bay ? 0 : roof;
+        translate([0, 0, bottom - 1]) cylinder(h = pin_depth * model_scale + 1, d = pin_d * model_scale, $fn = 32);
+        joint_pin_holes();
+    }
+    if (loose_flaps) both_sides() fwd_flap_slot();
 }
 
-scale(1 / model_scale) starship();
+// The part of the ship between heights z0 and z1
+module cut(z0, z1) intersection() {
+    children();
+    translate([-50000, -50000, z0]) cube([100000, 100000, z1 - z0]);
+}
+
+// What gets drawn: the loose parts laid flat; one section standing on a flat cut face, the lowest one
+// upside down on its top cut so its engines print upward from the bay's roof, the others upright on
+// their bottom cut; or the whole ship
+scale(1 / model_scale) if (section < 0) loose_flaps_flat();
+    else if (section > 0 && len(section_z) > 0) {
+        bounds = concat([-10000], section_z, [height + 10000]);
+        k = min(section, len(section_z) + 1);
+        e = 1; // each section stops 1 mm (full size) short of the cut, so faces lying on it don't leave slivers
+        if (k == 1) translate([0, 0, bounds[1] - e]) rotate([180, 0, 0]) cut(bounds[0], bounds[1] - e) starship();
+        else translate([0, 0, -bounds[k - 1] - e]) cut(bounds[k - 1] + e, bounds[k] - e) starship();
+    }
+    else starship();

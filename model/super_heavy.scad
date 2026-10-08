@@ -23,6 +23,48 @@ segments = 128;
 nozzle_wall = 40;
 // The grid fins' lattice. Off fills each fin's outline solid, which suits prints smaller than about 1:100.
 fin_lattice = true;
+// Draws only every this-many plates of the fins' lattice each way, for a coarser lattice whose holes
+// stay open at small sizes. 1 is the real lattice.
+fin_lattice_step = 1; // [1:1:4]
+// Full draws the engines' plumbing and steering actuators; Simple draws each engine as one turned
+// shape, bulked out to stand in for its plumbing, and leaves out the actuators
+engine_detail = 2; // [1:Simple, 2:Full]
+// The thinnest part allowed on the print, in mm at print size. The truss's struts and ring, the grid
+// fins and their necks, and the engines' necks are thickened to at least this. 0 keeps all of them
+// true to size.
+min_feature = 0; // [0:0.1:3]
+// How many inverted-V pairs of struts hold up the truss's ring. The real truss has 20.
+truss_pairs = 20; // [4:1:20]
+// What fills the truss. Open is the real truss, with the methane tank's dome inside. For printing the
+// booster upside down standing on its truss, Tall dome raises the dome to a flat top level with the
+// ring, with the struts still open round it, and Solid core fills the truss, with the struts standing
+// out from it as ribs.
+truss_fill = 0; // [0:Open, 1:Tall dome, 2:Solid core]
+// The tall dome's flat top, as a fraction of the hull's radius. Below about 0.4 its sides get too
+// shallow to print upside down without support.
+tall_dome_top = 0.5; // [0.2:0.05:0.9]
+// Turns the booster upside down for printing, with the top of its truss on z = 0
+print_upside_down = false;
+// A hole down the middle of the truss's top for a pin that stacks the ship on the booster, in mm at
+// print size: its diameter (0 for none) and depth. It needs a truss_fill to cut into.
+pin_d = 0; // [0:0.1:5]
+pin_depth = 6; // [1:0.5:20]
+// Draws the lifting pins under the two catch fins. Off leaves them out; they hang less than a
+// millimetre below the fins at 1:460, and the 1:460 print preset leaves them out.
+catch_pins = true;
+// For printing bigger than the printer in pieces: heights to cut the booster into sections at, in
+// full-size mm as in this file. Empty keeps it whole. Pins of pin_d line the sections up at each cut.
+section_z = [];
+// What to draw: 0 the whole booster; 1 and up one section, standing on a flat cut face for printing
+// (the lowest section upside down, the others upright); -1 the loose parts, laid flat.
+section = 0; // [-1:1:6]
+// Leaves the grid fins off the hull, each with a tab on its root that plugs into a slot in its
+// bearing, so they can print flat as loose parts
+loose_fins = false;
+// The tabs on loose parts, in mm at print size: how far each reaches into the hull, and the gap round
+// it in its slot
+tab_depth = 3; // [1:0.5:10]
+fit_clearance = 0.15; // [0:0.05:0.5]
 
 /* [From dimensions.md] */
 // Top of the hot-staging truss, where the ship sits
@@ -82,6 +124,17 @@ pod_out = 200;
 pod_d = 1200;
 port_d = 400;
 pod_port_up = 2000;
+// The two catch fins each have a lifting pin under the root, which the chopsticks lift and catch the
+// booster by (estimated): a post down from the fin's root, catch_pin_out from the hull, with a steel
+// bar at its foot pointing sideways, reaching catch_pin_reach from the fin's centreline. Both bars
+// point clockwise round the booster seen from above: toward the tower side on the fin at 270° and
+// toward the rudder on the fin at 90°. The bar's width and thickness, and how far the pin hangs
+// below the fin's lower face.
+catch_fin_az = [90, 270];
+catch_pin_out = 300;
+catch_pin_reach = 500;
+catch_pin_bar = [150, 100];
+catch_pin_drop = 270;
 // Chines (estimated): the taller pair on the raceway side and the shorter pair on the rudder side,
 // with the heights of their tops. All four come down to the top of the conduit band, and their
 // outer faces are chine_out from the axis.
@@ -104,6 +157,8 @@ truss_ring_w = 350;
 // to its fin
 pod_proud = 100;
 arm_d = 400;
+// The thickness of the post each lifting pin hangs from, round the hull
+catch_post_t = 120;
 // Chines: width round the hull, and the rise of the sloping cut at the bottom and the chamfer at the top
 chine_w = 1000;
 chine_cut = 1350;
@@ -127,13 +182,20 @@ actuator_h = 2050;
 
 /* [Hidden] */
 R = diameter / 2;
+min_t = min_feature * model_scale; // the thinnest part allowed, in model millimetres
 wall_top = height - truss_open; // top of the tank wall, where the dome starts
-ring_bottom = height - truss_ring_h;
+ring_w = max(truss_ring_w, min_t);
+ring_h = max(truss_ring_h, min_t);
+ring_bottom = height - ring_h;
 outer_az = [for (k = [0 : 19]) 9 + 18 * k];
 inner_az = [for (k = [0 : 9]) 18 + 36 * k];
-bracket_az = [for (k = [0 : 19]) 18 * k];
+bracket_az = [for (k = [0 : 19]) 18 * k];       // the skirt's openings
+truss_az = [for (k = [0 : truss_pairs - 1]) 360 / truss_pairs * k]; // the truss's brackets
 mount = raptor_sl_mount(raptor_exit); // height of an engine's top plate above its nozzle exit
 strut_r = R - 50;                      // radius of the circle the struts run on
+strut_t = max(strut_d, min_t);         // the struts' diameter, and at their tapered ends
+strut_end = max(strut_d / 4, min_t);
+wall = nozzle_wall > 0 ? max(nozzle_wall, min_t) : 0; // the nozzles' walls, thickened for printing
 fin_zc = (fin_z[0] + fin_z[1]) / 2;
 steel = [0.78, 0.79, 0.81];
 raceway_steel = [0.66, 0.67, 0.69];
@@ -142,6 +204,7 @@ plate_grey = [0.42, 0.42, 0.44];
 fin_grey = [0.5, 0.5, 0.52];
 bearing_bronze = [0.45, 0.38, 0.28];
 dome_steel = [0.7, 0.68, 0.63];
+pin_steel = [0.6, 0.57, 0.52];
 
 function az(a) = a + 90; // dimensions.md azimuth to OpenSCAD's angle from +X
 
@@ -169,6 +232,18 @@ module aft_skirt() color(dark) {
 module forward_dome() color(dome_steel) translate([0, 0, wall_top]) rotate_extrude($fn = segments)
     polygon(concat([[0, 0]], [for (i = [0 : 16]) let(a = 90 * i / 16) [R * cos(a), dome_rise * sin(a)]]));
 
+// For printing upside down with the truss open: the dome raised to a flat top level with the top of
+// the truss, tall_dome_top of the hull's radius across, where the stacking pin's hole goes. Its sides
+// leave the tank wall upright, as the real dome's do, and curve in more steeply than 45° (with the
+// default tall_dome_top), so it prints upside down without support.
+module tall_dome() color(dome_steel) {
+    a = tall_dome_top * R;
+    h = height - wall_top;
+    rotate_extrude($fn = segments) polygon(concat([[0, wall_top]],
+        [for (i = [0 : 16]) let(t = i / 16) [R - (R - a) * pow(t, 1.3), wall_top + h * t]],
+        [[0, height]]));
+}
+
 // The thrust plate that carries all 33 engines and closes the bottom of the skirt. Its tiled
 // underside is level with the skirt's bottom edge out at the outer engines and steps down to the
 // centre trio, so the gimballed engines each hang gimbal_drop above their nozzle exits.
@@ -194,12 +269,12 @@ module housings() color(dark) for (a = outer_az) rotate([0, 0, az(a)]) {
 }
 
 // One group of Raptors, each with its front facing outward. Gimballed engines hang from a block
-// under the thrust plate and are steered by two actuators.
+// under the thrust plate and are steered by two actuators, which the simple engines leave out.
 module engine_group(azs, r, exit_z, gimballed) for (a = azs) rotate([0, 0, az(a)]) translate([r, 0, exit_z]) {
-    raptor_sl(raptor_exit, nozzle_wall, $fn = 32);
+    raptor_sl(raptor_exit, wall, engine_detail, min_t / 2, $fn = 32);
     if (gimballed) color(dark) {
-        translate([0, 0, mount - 10]) cylinder(h = gimbal_drop - mount + 60, d = gimbal_d, $fn = 24);
-        for (s = [-1, 1]) rotate([0, 0, 45 * s]) hull() {
+        translate([0, 0, mount - 10]) cylinder(h = gimbal_drop - mount + 60, d = max(gimbal_d, min_t), $fn = 24);
+        if (engine_detail >= 2) for (s = [-1, 1]) rotate([0, 0, 45 * s]) hull() {
             translate([actuator_r[0], 0, actuator_h]) sphere(d = actuator_d, $fn = 12);
             translate([actuator_r[1], 0, gimbal_drop]) sphere(d = actuator_d, $fn = 12);
         }
@@ -215,37 +290,53 @@ module engines() {
 // A point on the circle the struts run on, at dimensions.md azimuth a and height z
 function strut_point(a, z) = [strut_r * cos(az(a)), strut_r * sin(az(a)), z];
 
-// A strut from p to q: a tube that tapers to a point at both ends
+// A strut from p to q: a tube that tapers to a point at both ends (to strut_end across, which is
+// only a point when min_feature is 0)
 module strut(p, q) hull() for (t = [0, 0.15, 0.85, 1])
-    translate(p + t * (q - p)) sphere(d = (t == 0 || t == 1) ? strut_d / 4 : strut_d, $fn = 12);
+    translate(p + t * (q - p)) sphere(d = (t == 0 || t == 1) ? strut_end : strut_t, $fn = 12);
 
 // The open hot-staging truss: an inverted V from each of the ring's attachment points down to the
-// brackets either side, the brackets on the tank wall, and the ring the ship sits on
+// brackets either side, the brackets on the tank wall, and the ring the ship sits on. With
+// truss_fill = 2, a solid core fills it, with the struts standing out from it.
 module truss() {
+    step = 360 / truss_pairs;                 // degrees between brackets
     da = strut_pair / 2 / strut_r * 180 / PI; // half the pair's spacing at the top, in degrees
     color(steel) {
-        for (a = bracket_az) {
-            strut(strut_point(a + 9 - da, ring_bottom), strut_point(a, wall_top));
-            strut(strut_point(a + 9 + da, ring_bottom), strut_point(a + 18, wall_top));
+        for (a = truss_az) {
+            strut(strut_point(a + step / 2 - da, ring_bottom), strut_point(a, wall_top));
+            strut(strut_point(a + step / 2 + da, ring_bottom), strut_point(a + step, wall_top));
         }
-        rotate_extrude($fn = segments) translate([R - truss_ring_w, ring_bottom]) square([truss_ring_w, truss_ring_h]);
+        rotate_extrude($fn = segments) translate([R - ring_w, ring_bottom]) square([ring_w, ring_h]);
+        if (truss_fill == 2) translate([0, 0, wall_top - 1])
+            cylinder(h = height - wall_top + 1, r = strut_r - strut_t / 4, $fn = segments);
     }
-    color(dark) for (a = bracket_az) rotate([0, 0, az(a)])
+    color(dark) for (a = truss_az) rotate([0, 0, az(a)])
         translate([R - 150, -bracket[0] / 2, wall_top - bracket[1]]) cube([250, bracket[0], bracket[1]]);
 }
 
 // A grid fin from gridfins.scad pointing along +X, on a neck from the round bearing it pivots on,
 // with the round port above the bearing. The neck reaches 60 mm into the fin's root plate.
 module mounted_grid_fin() {
-    color(fin_grey) {
-        translate([R + pod_out, 0, fin_zc]) grid_fin(fin_lattice);
-        translate([R - 100, 0, fin_zc]) rotate([0, 90, 0]) cylinder(h = pod_out + 160, d = arm_d, $fn = 24);
+    if (!loose_fins) color(fin_grey) {
+        translate([R + pod_out, 0, fin_zc]) grid_fin(fin_lattice, min_t, fin_lattice_step);
+        translate([R - 100, 0, fin_zc]) rotate([0, 90, 0]) cylinder(h = pod_out + 160, d = max(arm_d, min_t), $fn = 24);
     }
     color(bearing_bronze) translate([R - 150, 0, fin_zc]) rotate([0, 90, 0]) {
         cylinder(h = 150 + pod_proud, d = pod_d, $fn = 48);
         cylinder(h = 150 + pod_proud + 80, d = pod_d * 0.65, $fn = 48);
     }
     color(dark) translate([R - 100, 0, fin_zc + pod_port_up]) rotate([0, 90, 0]) cylinder(h = 180, d = port_d, $fn = 32);
+}
+
+// The lifting pin under the root of a catch fin pointing along +X: a post hanging from the fin's root
+// triangle, with a steel bar at its foot reaching out toward -Y, which is clockwise round the booster
+// seen from above. The post runs up into the root.
+module lifting_pin() color(pin_steel) {
+    w = catch_pin_bar[0];
+    translate([R + catch_pin_out - w / 2, catch_post_t / 2, fin_zc - grid_fin_depth(min_t) / 2 - catch_pin_drop]) {
+        translate([0, -catch_post_t, 0]) cube([w, catch_post_t, catch_pin_drop + 60]);
+        translate([0, -catch_post_t / 2 - catch_pin_reach, 0]) cube([w, catch_post_t / 2 + catch_pin_reach, catch_pin_bar[1]]);
+    }
 }
 
 // A flat panel outlined by [r, z] points in the XZ plane, from y = y0 to y0 + t
@@ -264,20 +355,82 @@ module raceway() rotate([0, 0, az(raceway_az)]) translate([R - 100, 0, raceway_z
         translate([0, raceway_z[1] - raceway_z[0] - raceway_w / 2]) circle(d = raceway_w, $fn = 32);
     }
 
-module super_heavy() {
-    barrel();
-    aft_skirt();
-    thrust_plate();
-    housings();
-    forward_dome();
-    truss();
-    for (a = fin_az) rotate([0, 0, az(a)]) mounted_grid_fin();
-    color(steel) {
-        for (a = tall_chine_az) chine(a, tall_chine_top);
-        for (a = short_chine_az) chine(a, short_chine_top);
-    }
-    color(raceway_steel) raceway();
-    engines();
+// A loose grid fin pointing along +X from its root at x = 0, centred on z = 0 through its depth: the fin
+// with a tab on its root in place of the neck, reaching back across the gap to the bearing and on
+// tab_depth into the hull. grow widens the tab all round, to cut its slot.
+module fin_tab(grow = 0) {
+    d = grid_fin_depth(min_t);
+    w = max(arm_d, min_t);
+    t = pod_out + tab_depth * model_scale;
+    translate([-t - grow, -w / 2 - grow, -d / 2 - grow]) cube([t + 60 + grow, w + 2 * grow, d + 2 * grow]);
 }
 
-scale(1 / model_scale) super_heavy();
+module loose_fin() color(fin_grey) {
+    grid_fin(fin_lattice, min_t, fin_lattice_step);
+    fin_tab();
+}
+
+// The loose fins laid flat side by side for printing, top face down
+module loose_fins_flat() {
+    d = grid_fin_depth(min_t);
+    for (i = [0 : len(fin_az) - 1]) translate([0, i * (grid_fin_width() + 1000), d / 2]) loose_fin();
+}
+
+// The slots the loose fins' tabs plug into, in the bearings
+module fin_slots() for (a = fin_az) rotate([0, 0, az(a)]) translate([R + pod_out, 0, fin_zc])
+    fin_tab(fit_clearance * model_scale);
+
+// Holes for the pins that line up the sections at each cut: two at different radii, so the sections
+// only go together one way round, each reaching pin_depth into both sides
+module joint_pin_holes() for (z = section_z, p = [[0, 0.5], [180, 0.3]])
+    rotate([0, 0, az(p[0])]) translate([p[1] * R, 0, z - pin_depth * model_scale])
+        cylinder(h = 2 * pin_depth * model_scale, d = pin_d * model_scale, $fn = 24);
+
+// The booster, with the hole for a stacking pin cut down into the top of its truss (or into the top
+// of the dome when the truss is open) when pin_d is set, and the slots for loose fins
+module super_heavy() difference() {
+    union() {
+        barrel();
+        aft_skirt();
+        thrust_plate();
+        housings();
+        if (truss_fill == 1) tall_dome();
+        else forward_dome();
+        truss();
+        for (a = fin_az) rotate([0, 0, az(a)]) mounted_grid_fin();
+        if (catch_pins) for (a = catch_fin_az) rotate([0, 0, az(a)]) lifting_pin();
+        color(steel) {
+            for (a = tall_chine_az) chine(a, tall_chine_top);
+            for (a = short_chine_az) chine(a, short_chine_top);
+        }
+        color(raceway_steel) raceway();
+        engines();
+    }
+    if (pin_d > 0) {
+        top = truss_fill > 0 ? height : wall_top + dome_rise;
+        translate([0, 0, top - pin_depth * model_scale])
+            cylinder(h = pin_depth * model_scale + 1, d = pin_d * model_scale, $fn = 32);
+        joint_pin_holes();
+    }
+    if (loose_fins) fin_slots();
+}
+
+// The part of the booster between heights z0 and z1
+module cut(z0, z1) intersection() {
+    children();
+    translate([-50000, -50000, z0]) cube([100000, 100000, z1 - z0]);
+}
+
+// What gets drawn: the loose parts laid flat; one section standing on a flat cut face, the lowest one
+// upside down on its top cut so its engines print upward, the others upright on their bottom cut; or
+// the whole booster, turned upside down for printing with the top of its truss on z = 0 if asked
+scale(1 / model_scale) if (section < 0) loose_fins_flat();
+    else if (section > 0 && len(section_z) > 0) {
+        bounds = concat([-10000], section_z, [height + 10000]);
+        k = min(section, len(section_z) + 1);
+        e = 1; // each section stops 1 mm (full size) short of the cut, so faces lying on it don't leave slivers
+        if (k == 1) translate([0, 0, bounds[1] - e]) rotate([180, 0, 0]) cut(bounds[0], bounds[1] - e) super_heavy();
+        else translate([0, 0, -bounds[k - 1] - e]) cut(bounds[k - 1] + e, bounds[k] - e) super_heavy();
+    }
+    else if (print_upside_down) translate([0, 0, height]) rotate([180, 0, 0]) super_heavy();
+    else super_heavy();

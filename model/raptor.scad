@@ -12,6 +12,12 @@
 model_scale = 1; // [1:1000]
 // Nozzle walls. 0 makes the nozzles solid.
 nozzle_wall = 40;
+// Full draws the plumbing, valves and rings; Simple draws each engine as one turned shape, bulked
+// out to stand in for them
+engine_detail = 2; // [1:Simple, 2:Full]
+// The thinnest part allowed on the print, in mm at print size: the engine's neck is thickened to at
+// least this across. 0 keeps it true to size.
+min_feature = 0; // [0:0.1:3]
 
 /* [Hidden] */
 // Sea-level Raptor 3 with a 1.3 m exit: [h, r] in metres, h up from the nozzle exit
@@ -50,6 +56,14 @@ valve_lines = [
 // Round ports round the upper powerhead: height, count, how far their faces stand from the axis,
 // and their radius
 powerhead_ports = [2.47, 8, 0.28, 0.035];
+// The simple engine's outline from the top of the bell up, [h, r] in metres like sl_core. It is one
+// turned shape that stands in for the chamber, the powerhead and the pipes and valves round them,
+// bulked out to about the width the plumbing gives the full engine, with a slight waist at the throat.
+simple_core = [
+    [1.15, 0.345], [1.19, 0.41], [1.26, 0.41],                 // the manifold ring at the top of the bell
+    [1.5, 0.34], [1.8, 0.38], [2.36, 0.4],                     // throat, chamber, powerhead and valves
+    [2.45, 0.3], [2.5, 0.25], [2.6, 0.25], [2.6, 0.2], [2.67, 0.2], // top plate and its ring of studs
+    [2.67, 0.14], [2.75, 0.14], [2.75, 0.11], [2.91, 0.11]];   // domed hub and the top port
 
 // Raptor 3 Vacuum with a 2.3 m exit: the nozzle up to the throat. Above that it shares the
 // sea-level engine's chamber and powerhead.
@@ -72,11 +86,11 @@ function raptor_vac_mount(exit = 2400, sl_exit = 1300) =
 
 // [r, z] outline in mm of a nozzle turned from `out`, a list of [h, r] in metres from the exit up,
 // scaled by k. With a wall it is hollow: the inside follows the outside, `wall` in, up to
-// bell_top, then narrows straight to the throat bore.
-function nozzle_outline(out, bell_top, wall, k) = let(
+// bell_top, then narrows straight to the throat bore. The outside is never narrower than min_r.
+function nozzle_outline(out, bell_top, wall, k, min_r = 0) = let(
     s = 1000 * k,
     top = out[len(out) - 1][0],
-    outside = [for (p = out) [p[1] * s, p[0] * s]])
+    outside = [for (p = out) [max(p[1] * s, min_r), p[0] * s]])
     wall <= 0 ? concat([[0, out[0][0] * s]], outside, [[0, top * s]])
               : concat(outside,
                        top > bell_top ? [[throat_bore * s, top * s]] : [],
@@ -103,14 +117,19 @@ module pipe(path, r, n = 10) {
 }
 
 // Chamber, powerhead and plumbing with the throat on z = 0, scaled by k. The turned part starts
-// 5 mm below the throat so it fuses with the nozzle.
-module raptor_core(k) {
+// 5 mm below the throat so it fuses with the nozzle, and is never narrower than min_r. With
+// detail = 1 it is simple_core's bulked outline instead, without the rings, pipes, valves and ports.
+module raptor_core(k, detail = 2, min_r = 0) {
     s = 1000 * k;
     function at(p) = [p[0] * s, (p[1] - sl_throat) * s]; // [y, h] in metres to [y, z] in mm
-    color(metal) {
+    color(metal) if (detail < 2) rotate_extrude() polygon(concat(
+        [[0, (simple_core[0][0] - sl_throat) * s]],
+        [for (p = simple_core) [max(p[1] * s, min_r), (p[0] - sl_throat) * s]],
+        [[0, (simple_core[len(simple_core) - 1][0] - sl_throat) * s]]));
+    else {
         rotate_extrude() polygon(concat(
-            [[0, -5], [sl_core[0][1] * s, -5]],
-            [for (p = sl_core) [p[1] * s, (p[0] - sl_throat) * s]],
+            [[0, -5], [max(sl_core[0][1] * s, min_r), -5]],
+            [for (p = sl_core) [max(p[1] * s, min_r), (p[0] - sl_throat) * s]],
             [[0, (sl_core[len(sl_core) - 1][0] - sl_throat) * s]]));
         for (c = core_rings) translate([0, 0, (c[0] - sl_throat) * s])
             rotate_extrude($fn = 32) translate([c[1] * s, 0]) circle(c[2] * s, $fn = 8);
@@ -125,30 +144,32 @@ module raptor_core(k) {
     }
 }
 
-// Sea-level Raptor 3 with its nozzle exit on z = 0
-module raptor_sl(exit = 1300, wall = 40) {
+// Sea-level Raptor 3 with its nozzle exit on z = 0. For small prints, detail = 1 bulks it out in place
+// of the plumbing, and nothing on the engine is narrower than min_r.
+module raptor_sl(exit = 1300, wall = 40, detail = 2, min_r = 0) {
     k = exit / 1300;
-    color(dark) rotate_extrude() polygon(nozzle_outline(sl_nozzle, sl_bell_top, wall, k));
-    translate([0, 0, sl_throat * 1000 * k]) raptor_core(k);
+    color(dark) rotate_extrude() polygon(nozzle_outline(sl_nozzle, sl_bell_top, wall, k, min_r));
+    translate([0, 0, sl_throat * 1000 * k]) raptor_core(k, detail, min_r);
 }
 
 // Raptor 3 Vacuum with its nozzle exit on z = 0. sl_exit sizes the chamber and powerhead it
-// shares with the sea-level engine.
-module raptor_vac(exit = 2400, wall = 40, sl_exit = 1300) {
+// shares with the sea-level engine; detail and min_r work as for raptor_sl.
+module raptor_vac(exit = 2400, wall = 40, sl_exit = 1300, detail = 2, min_r = 0) {
     kv = exit / 2300;
     s = 1000 * kv;
     color(light) {
-        rotate_extrude() polygon(nozzle_outline([for (p = vac_nozzle) if (p[0] <= vac_ext_top) p], vac_ext_top, wall, kv));
+        rotate_extrude() polygon(nozzle_outline([for (p = vac_nozzle) if (p[0] <= vac_ext_top) p], vac_ext_top, wall, kv, min_r));
         rotate_extrude() translate([1.12 * s, vac_ring[0] * s])
             square([(vac_ring[2] - 1.12) * s, (vac_ring[1] - vac_ring[0]) * s]);
     }
     color(dark) rotate_extrude()
-        polygon(nozzle_outline([for (p = vac_nozzle) if (p[0] >= vac_ext_top) p], vac_bell_top, wall, kv));
-    translate([0, 0, vac_nozzle[len(vac_nozzle) - 1][0] * s]) raptor_core(sl_exit / 1300);
+        polygon(nozzle_outline([for (p = vac_nozzle) if (p[0] >= vac_ext_top) p], vac_bell_top, wall, kv, min_r));
+    translate([0, 0, vac_nozzle[len(vac_nozzle) - 1][0] * s]) raptor_core(sl_exit / 1300, detail, min_r);
 }
 
 // One of each, side by side with their fronts facing -Y
 scale(1 / model_scale) {
-    translate([-1700, 0, 0]) rotate([0, 0, -90]) raptor_sl(wall = nozzle_wall, $fn = 96);
-    translate([1100, 0, 0]) rotate([0, 0, -90]) raptor_vac(wall = nozzle_wall, $fn = 96);
+    min_r = min_feature * model_scale / 2;
+    translate([-1700, 0, 0]) rotate([0, 0, -90]) raptor_sl(wall = nozzle_wall, detail = engine_detail, min_r = min_r, $fn = 96);
+    translate([1100, 0, 0]) rotate([0, 0, -90]) raptor_vac(wall = nozzle_wall, detail = engine_detail, min_r = min_r, $fn = 96);
 }

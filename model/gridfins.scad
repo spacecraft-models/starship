@@ -16,6 +16,12 @@
 model_scale = 1; // [1:1000]
 // The lattice. Off fills the fin's outline solid, which suits prints smaller than about 1:100.
 fin_lattice = true;
+// The thinnest part allowed on the print, in mm at print size: the fin's depth and its plates are
+// thickened to at least this. 0 keeps them true to size.
+min_feature = 0; // [0:0.1:3]
+// Draws only every this-many plates of the lattice each way, for a coarser lattice whose holes stay
+// open at small sizes. 1 is the real lattice.
+fin_lattice_step = 1; // [1:1:4]
 
 /* [From dimensions.md] */
 // Length from the root to the tip: the 4.2 m the fin reaches out from the hull, less the 0.2 m its
@@ -59,8 +65,15 @@ function fin_shape(x0) = let(
 // Length of the fin from root to tip once its corners are fitted to the lattice
 function grid_fin_length() = fin_shape(0)[0][3][0];
 
-// The two families of diagonal lattice lines through the node at (xc, 0), as 2D strips w wide
-module fin_lines_2d(xc, n, w) translate([xc, 0]) rotate(45) for (i = [-n : n]) {
+// The fin's depth from its top face to its lower one, thickened to at least min_t as grid_fin() does
+function grid_fin_depth(min_t = 0) = max(fin_depth, min_t);
+
+// Width of the fin across, for laying fins out side by side
+function grid_fin_width() = fin_width;
+
+// The two families of diagonal lattice lines through the node at (xc, 0), as 2D strips w wide,
+// every step-th line of each family
+module fin_lines_2d(xc, n, w, step = 1) translate([xc, 0]) rotate(45) for (i = [-floor(n / step) * step : step : n]) {
     translate([i * fin_s * sqrt(2), 0]) square([w, 2 * n * fin_s * sqrt(2)], center = true);
     translate([0, i * fin_s * sqrt(2)]) square([2 * n * fin_s * sqrt(2), w], center = true);
 }
@@ -70,33 +83,34 @@ module fin_lines_2d(xc, n, w) translate([xc, 0]) rotate(45) for (i = [-n : n]) {
 function fin_root_triangle(corners, xc) = [corners[0], [xc, 0], corners[len(corners) - 1]];
 
 // The whole fin seen from above: the lattice, the plates round its edge, the cross plate and the
-// root triangle. With open = false it is the solid area the fin covers.
-module fin_2d(corners, xc, n, open) {
+// root triangle, with lattice plates bar thick and edge plates edge thick, and every step-th lattice
+// plate. With open = false it is the solid area the fin covers.
+module fin_2d(corners, xc, n, open, bar = fin_bar, edge = edge_t, step = 1) {
     if (!open) polygon(corners);
     else {
         polygon(fin_root_triangle(corners, xc));
         intersection() {
             polygon(corners);
-            fin_lines_2d(xc, n, fin_bar);
+            fin_lines_2d(xc, n, bar, step);
         }
         difference() {
             polygon(corners);
-            offset(delta = -edge_t) polygon(corners);
+            offset(delta = -edge) polygon(corners);
         }
         intersection() {
             polygon(corners);
-            translate([xc - edge_t, -fin_width]) square([edge_t, 2 * fin_width]);
+            translate([xc - edge, -fin_width]) square([edge, 2 * fin_width]);
         }
     }
 }
 
-// A plate len long in its own plane, fin_depth tall and t thick, with notches cut into its lower
-// edge between junctions every d along it, leaving a sharp point at each junction. The notches are
+// A plate len long in its own plane, depth tall and t thick, with notches cut into its lower edge
+// between junctions every d along it, leaving a sharp point at each junction. The notches are
 // rounded, or V-shaped with vee = true.
-module notched_plate_2d(len, d, t, vee = false) {
+module notched_plate_2d(len, d, t, vee = false, depth = fin_depth) {
     a = (d - t) / 2;
     difference() {
-        square([len, fin_depth]);
+        square([len, depth]);
         for (k = [0 : round(len / d) - 1]) translate([(k + 0.5) * d, 0])
             if (vee) polygon([[-a, -1], [a, -1], [0, notch_depth]]);
             else scale([1, notch_depth / a]) circle(a, $fn = 24);
@@ -104,35 +118,40 @@ module notched_plate_2d(len, d, t, vee = false) {
 }
 
 // A notched plate standing on the line from a to b, on its left (the inside of the outline)
-module plate_on(a, b, d, t, z0, vee = false) {
+module plate_on(a, b, d, t, z0, vee = false, depth = fin_depth) {
     v = b - a;
     translate([a[0], a[1], z0]) rotate([0, 0, atan2(v[1], v[0])]) translate([0, t, 0]) rotate([90, 0, 0])
-        linear_extrude(t) notched_plate_2d(norm(v), d, t, vee);
+        linear_extrude(t) notched_plate_2d(norm(v), d, t, vee, depth);
 }
 
 // The fin, pointing along +X from its root at x = 0. With lattice = false its outline is solid.
-module grid_fin(lattice = true) {
+// For small prints, min_t thickens its depth and plates to at least that, in mm, and a step above 1
+// keeps only every step-th lattice plate.
+module grid_fin(lattice = true, min_t = 0, step = 1) {
+    depth = max(fin_depth, min_t);
+    bar = max(fin_bar, min_t);
+    edge = max(edge_t, min_t);
     shape = fin_shape(0);
     corners = shape[0];
     xc = shape[1];
-    z0 = -fin_depth / 2;
+    z0 = -depth / 2;
     n = ceil(norm([corners[3][0] - xc, fin_width / 2]) / (fin_s * sqrt(2))) + 1;
     if (lattice && $preview) {
-        translate([0, 0, z0]) linear_extrude(fin_depth) polygon(fin_root_triangle(corners, xc));
+        translate([0, 0, z0]) linear_extrude(depth) polygon(fin_root_triangle(corners, xc));
         intersection() {
-            translate([0, 0, z0]) linear_extrude(fin_depth) difference() {
-                offset(delta = -edge_t / 2) polygon(corners);
+            translate([0, 0, z0]) linear_extrude(depth) difference() {
+                offset(delta = -edge / 2) polygon(corners);
                 polygon(fin_root_triangle(corners, xc));
             }
-            translate([xc, 0, z0]) rotate([0, 0, 45]) for (i = [-n : n], turn = [0, 90])
-                rotate([0, 0, turn]) translate([-n * fin_s * sqrt(2), i * fin_s * sqrt(2) + fin_bar / 2, 0])
-                    rotate([90, 0, 0]) linear_extrude(fin_bar)
-                        notched_plate_2d(2 * n * fin_s * sqrt(2), fin_s * sqrt(2), fin_bar);
+            translate([xc, 0, z0]) rotate([0, 0, 45]) for (i = [-floor(n / step) * step : step : n], turn = [0, 90])
+                rotate([0, 0, turn]) translate([-n * fin_s * sqrt(2), i * fin_s * sqrt(2) + bar / 2, 0])
+                    rotate([90, 0, 0]) linear_extrude(bar)
+                        notched_plate_2d(2 * n * fin_s * sqrt(2), step * fin_s * sqrt(2), bar, depth = depth);
         }
         for (i = [0 : len(corners) - 1]) let(a = corners[i], b = corners[(i + 1) % len(corners)])
-            plate_on(a, b, abs(b[0] - a[0]) > 1 && abs(b[1] - a[1]) > 1 ? fin_s * sqrt(2) : 2 * fin_s, edge_t, z0);
-        plate_on([xc, -fin_h * fin_s], [xc, fin_h * fin_s], 2 * fin_s, edge_t, z0, vee = true);
-    } else translate([0, 0, z0]) linear_extrude(fin_depth) fin_2d(corners, xc, n, lattice);
+            plate_on(a, b, step * (abs(b[0] - a[0]) > 1 && abs(b[1] - a[1]) > 1 ? fin_s * sqrt(2) : 2 * fin_s), edge, z0, depth = depth);
+        plate_on([xc, -fin_h * fin_s], [xc, fin_h * fin_s], step * 2 * fin_s, edge, z0, vee = true, depth = depth);
+    } else translate([0, 0, z0]) linear_extrude(depth) fin_2d(corners, xc, n, lattice, bar, edge, step);
 }
 
-scale(1 / model_scale) color([0.5, 0.5, 0.52]) grid_fin(fin_lattice);
+scale(1 / model_scale) color([0.5, 0.5, 0.52]) grid_fin(fin_lattice, min_feature * model_scale, fin_lattice_step);

@@ -1,0 +1,38 @@
+{
+    "parameterSets": {
+        "1:460 print": {
+            "model_scale": "460",
+            "nozzle_wall": "0",
+            "fin_lattice": "true",
+            "fin_lattice_step": "3",
+            "engine_detail": "1",
+            "min_feature": "1",
+            "truss_pairs": "10",
+            "truss_fill": "1",
+            "tall_dome_top": "0.5",
+            "print_upside_down": "true",
+            "pin_d": "2",
+            "pin_depth": "6",
+            "catch_pins": "false",
+            "section_z": "[]",
+            "loose_fins": "false"
+        },
+        "1:230 print": {
+            "model_scale": "230",
+            "nozzle_wall": "40",
+            "fin_lattice": "true",
+            "fin_lattice_step": "2",
+            "engine_detail": "1",
+            "min_feature": "0.8",
+            "truss_pairs": "20",
+            "truss_fill": "0",
+            "print_upside_down": "false",
+            "pin_d": "2",
+            "pin_depth": "6",
+            "catch_pins": "false",
+            "section_z": "[36000, 65100]",
+            "loose_fins": "false"
+        }
+    },
+    "fileFormatVersion": "1"
+}
