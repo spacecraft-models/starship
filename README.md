@@ -2,6 +2,8 @@
 
 A model of SpaceX's Starship and its Super Heavy booster, in their V3 versions, that can be 3-D printed. The models are OpenSCAD files at full size, built from the dimensions collected in [dimensions.md](dimensions.md).
 
+This work is not affiliated with or endorsed by SpaceX.
+
 ## What's in the repo
 
 | Path | What it holds |
