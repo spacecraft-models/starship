@@ -10,11 +10,13 @@
 // Azimuths are dimensions.md's: 0 is the rudder grid fin, under the ship's windward side,
 // increasing counterclockwise seen from above. It faces +Y like the ship's windward side, so the
 // default render views look at the tower side, where the raceway runs.
-// Each part's material, and its colour in previews, comes from materials.scad.
+// Each part's material, and its colour in previews, comes from materials.scad. Small parts the ship
+// shares, such as ports and vent slats, come from details.scad.
 
 use <raptor.scad>
 use <gridfins.scad>
 use <materials.scad>
+use <details.scad>
 
 /* [Print] */
 // Print at 1:model_scale. 1 is full size; 300 makes the booster 243 mm tall.
@@ -54,6 +56,10 @@ pin_depth = 6; // [1:0.5:20]
 // Draws the lifting pins under the two catch fins. Off leaves them out; they hang less than a
 // millimetre below the fins at 1:460, and the 1:460 print preset leaves them out.
 catch_pins = true;
+// Draws the fine details: the band of vent slats and the bell vents under it, the ports and their
+// plates, the QD plates and the pipe down the rudder side. None stands more than about half a metre off
+// the hull, about a millimetre at 1:460, so the print presets leave them out.
+fine_details = true;
 // For printing bigger than the printer in pieces: heights to cut the booster into sections at, in
 // full-size mm as in this file. Empty keeps it whole. Pins of pin_d line the sections up at each cut.
 section_z = [];
@@ -153,6 +159,31 @@ chine_out = 5850;
 raceway_az = 178;
 raceway_z = [36150, 68000];
 raceway_w = 750;
+// The band of vent slats round the hull where the forward section is stacked on the LOX tank
+// (estimated): its bottom and top, and each slat's width, spacing and how far it stands off the hull
+vent_band = [47400, 48800];
+vent_slat = [100, 255, 100];
+// The bell-shaped vents hanging from the band's lower edge (estimated): their azimuths (the pair by
+// the 270° fin is assumed by symmetry), and each bell's diameter at its top and at its mouth, and
+// its length
+cowbell_az = [79, 101, 259, 281];
+cowbell = [280, 480, 900];
+// Round ports in rings of holes (estimated), each [azimuth, centre height]: one over the rudder fin and
+// one above a QD plate. The diameters of the port and of the ring round it.
+round_ports = [[0, 50700], [324, 7000]];
+round_port = [530, 1100];
+// The hexagonal plate behind each port over a fin pod, across its flats, and the azimuths of more
+// ports like them, at the same height, with no fin under them (estimated)
+port_plate = 800;
+extra_port_az = [55];
+// The two QD plates on the rudder side (estimated): their azimuths, bottom and top, and how far each
+// hexagon stands off the hull in its foil wrap
+qd_plate_az = [325, 35];
+qd_plate_z = [5000, 6300];
+qd_plate_out = 150;
+// The pipe down the rudder side from the band of slats (estimated): its azimuth and diameter, and how
+// far apart the legs of its Y land on top of the conduit band
+y_pipe = [0, 200, 600];
 
 /* [Estimates] */
 // The ring at the top of the truss that the ship sits on: height and radial width. Its height sets
@@ -324,6 +355,35 @@ module mounted_grid_fin() {
         cylinder(h = 150 + pod_proud + 80, d = pod_d * 0.65, $fn = 48);
     }
     made_of("black") translate([R - 100, 0, fin_zc + pod_port_up]) rotate([0, 90, 0]) cylinder(h = 180, d = port_d, $fn = 32);
+    if (fine_details) made_of("steel") on_hull(0, R, fin_zc + pod_port_up) hex_plate(port_plate, 20);
+}
+
+// The fine details on the hull: the band of vent slats and the bell vents hanging from it, the round
+// ports, the ports with no fin under them, the QD plates and the pipe down the rudder side
+module hull_fittings() {
+    made_of("steel") slat_band(R, vent_band[0], vent_band[1], 0, 360, vent_slat);
+    for (a = cowbell_az) made_of("steel") rotate([0, 0, az(a)]) translate([R + 300, 0, vent_band[0]]) {
+        rotate([0, -8, 0]) bell(cowbell[0], cowbell[1], cowbell[2]);
+        translate([-300 - sink(), -60, -150]) cube([sink() + 200, 120, 150]); // the bell's bracket
+    }
+    for (p = round_ports) on_hull(az(p[0]), R, p[1]) {
+        bolted_port(round_port[0], round_port[0] + 120, 40);
+        made_of("steel") raised_ring(round_port[1], 80, 25);
+    }
+    for (a = extra_port_az) rotate([0, 0, az(a)]) {
+        made_of("black") translate([R - 100, 0, fin_zc + pod_port_up]) rotate([0, 90, 0]) cylinder(h = 180, d = port_d, $fn = 32);
+        made_of("steel") on_hull(0, R, fin_zc + pod_port_up) hex_plate(port_plate, 20);
+    }
+    for (a = qd_plate_az) made_of("steel") on_hull(az(a), R, (qd_plate_z[0] + qd_plate_z[1]) / 2)
+        hex_plate((qd_plate_z[1] - qd_plate_z[0]) * cos(30), qd_plate_out);
+    // The pipe stands just off the hull and splits in a Y a little above the conduit band
+    made_of("steel") rotate([0, 0, az(y_pipe[0])]) {
+        d = y_pipe[1];
+        x = R + d / 2 + 20;
+        split = band_top + 600;
+        translate([x, 0, split]) cylinder(h = vent_band[0] - split, d = d, $fn = 16);
+        for (s = [-1, 1]) rod([x, 0, split], [R + d / 2, s * y_pipe[2] / 2, band_top + d / 2], d * 0.8);
+    }
 }
 
 // The lifting pin under the root of a catch fin pointing along +X: a post hanging from the fin's root
@@ -402,6 +462,7 @@ module super_heavy() difference() {
             for (a = short_chine_az) chine(a, short_chine_top);
         }
         made_of("steel") raceway();
+        if (fine_details) hull_fittings();
         engines();
     }
     if (pin_d > 0) {

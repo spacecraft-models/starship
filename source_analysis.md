@@ -97,7 +97,7 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Strut lean | Angle from vertical | 8° to 10°, round the hull rather than inward | The truss ring height in `truss_ring_h` |
 | Struts and brackets | Scaled from the hull | Struts are tubes 0.2 m to 0.25 m across, pointed at both ends; brackets are dark U-shaped clevises about 0.25 m wide and 0.6 m tall | `strut_d`, `bracket` |
 | Forward dome | Where its curve starts | At the seam level with the bracket tops, with no step; steel panels with rows of rivets | Hot-staging truss |
-| Ports above the pods | Scaled from the hull | About 0.4 m across with a ring of bolts, about 2 m above the pod's centre | `port_d`, `pod_port_up` |
+| Ports above the pods | Scaled from the hull | About 0.4 m across with a ring of bolts, about 2 m above the pod's centre. Each sits on a hexagonal plate about 0.8 m across (clearer in the Starfactory side view below). | `port_d`, `pod_port_up`, `port_plate` |
 | Fin bearings | Scaled from the hull, full-size copy | About 1.2 m across with a toothed rim. Checked again: the toothed rim is about 600 px (1.3 m) tall and the bearing ring inside it about 460 px (1.0 m). | `pod_d` |
 | Fin stand-off | Gap between the fin's root and the hull | About 0.2 m, with little more than the bearing between them (Tom's correction, from this photo) | `pod_out` |
 | Fin depth | The side plate against the 0.4 m spacing of its teeth | About 0.5 m (an earlier 0.8 m was far too thick) | `gridfins.scad` `fin_depth` |
@@ -177,6 +177,35 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Lifting pin | Scaled from the hull | A dark block about 0.4 m wide and 0.28 m tall. Checked again: its face is 33 px wide, or 42 px with the darker strip at its side, and 29 px tall, which gives 0.31 m to 0.39 m by 0.27 m. | `catch_pin_bar`, `catch_pin_drop` |
 | Which way the bar points | Where the block falls along the fin | Further out than a bar pointing toward the tower would show, so this bar points toward the rudder. With the 270° fin's bar pointing toward the tower, both point clockwise seen from above (tentative). | The bar directions in `super_heavy.scad` |
 
+### Vents, ports and quick disconnects
+
+#### A V3 booster beside the Starfactory sign
+
+- **Photo:** [2Q5A8831-wmarked.jpg](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8831-wmarked.jpg), 8137 × 5427, by Max Evans for NASASpaceFlight, May 2026, the featured image of [Super Heavy Block 3 the Booster of the Future](https://www.nasaspaceflight.com/2026/05/super-heavy-block-3-booster-future/)
+- **Saved as:** `nsf_b19_starfactory_side_vents.jpg`
+- **Shows:** a whole V3 booster standing beside the Starfactory's "Gateway to Mars" sign, side on, in sunlight. A band of vertical slats rings the hull about two thirds of the way up, with two small bell-shaped vents hanging under it. The grid fins, the truss and the ports above the fin pods are at the top.
+- **Scale:** the 9 m hull, about 503 px across (56 px/m), checked on the truss ring. The ring's ellipse shows the camera looking up about 10°, so heights are read where a part meets the hull's outline, or corrected by up to 50 px for parts on the near side, and counted down from the top of the truss at z = 72.3 m. Two fins at the same apparent height, one each side, and a third peeking out low on the far side put the camera at about 45°, between the rudder fin and the 90° catch fin.
+
+| Quantity | How | Result | Used in |
+|---|---|---|---|
+| Band of slats | Its top and bottom where it meets the outline, the slats' spacing near the middle, and how far it stands past the outline | z ≈ 47.4 m to 48.8 m (± 0.3 m). Slats about 0.1 m wide and 0.255 m apart (14 in 3.6 m), standing about 0.1 m off the hull. It runs right across the half that shows; the far side is assumed the same. | `super_heavy.scad` `vent_band`, `vent_slat` |
+| Bell vents | Offsets, and sizes against the hull | Two flared bells hanging from the band's lower edge, about 0.9 m long, about 0.28 m across at the top and 0.48 m at the mouth, at about 79° and 101° (± 3°), either side of the 90° catch fin. They look like the "cowbell" vents earlier boosters had below the common dome. A matching pair either side of the 270° fin is assumed, not seen. | `cowbell_az`, `cowbell` |
+| Round port | Offset and height | A dark port about 0.53 m across inside a ring of holes about 1.1 m across, at about 0° (over the rudder fin), z ≈ 50.7 m | `round_ports`, `round_port` |
+| Vertical pipe | Offset | A pipe about 0.2 m across runs down from the band's lower edge at about 0° (± 3°) | `y_pipe` |
+| Ports above the fins | Offsets and heights | The ports over the rudder fin and the 90° fin, and a third one at about 55° with no fin under it, all at the same height, z ≈ 68 m. Each sits on a hexagonal plate about 0.8 m across. See [Differences](#differences) for their height. | `port_plate`, `extra_port_az` |
+
+#### Booster 19's forward section lowered onto its LOX tank
+
+- **Photo:** [G88uX8IWoAAa3K1](https://pbs.twimg.com/media/G88uX8IWoAAa3K1?format=jpg&name=orig), 2731 × 4096, SpaceX's photo, posted on X and credited to SpaceX in Ringwatchers' [Flight 12 history](https://ringwatchers.com/article/s39-b19-history) ("Booster 19 stacking concludes")
+- **Saved as:** `spacex_b19_final_stacking_mega_bay.jpg`
+- **Shows:** Booster 19's forward section, with its truss and dome, hanging from the crane in Mega Bay 1 as it is lowered onto the LOX tank, seen from high in the bay.
+- **Scale:** none used; the photo shows where things are.
+
+| Quantity | How | Result | Used in |
+|---|---|---|---|
+| Round port | Looked at | A round port in a ringed flange a few metres below the truss, as in the Starfactory side view | `round_ports` |
+| Bell vents | Looked at | A pair of bell vents just below the joint where the two sections meet, so the band of slats in the side view sits at that joint | `cowbell_az` |
+
 ### Engine section
 
 #### Booster 20's aft end
@@ -195,6 +224,7 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Skirt openings | Scaled from the exits | About 0.15 m wide and 0.24 m tall, centred at z ≈ 3.05 m, between the housings | `skirt_opening`, `opening_z` |
 | Conduit band | Scaled from the exits | Pipes round the skirt at z ≈ 3.53 m (the biggest, 0.14 m), 3.88, 4.43, 4.68 and 4.91 m; 40 junction boxes, one every 9°, from z ≈ 3.88 to 4.33 m, each 0.22 m wide and 0.15 m deep, linked by three 0.05 m pipes at z ≈ 4.0, 4.1 and 4.2 m. The band stands up to 0.15 m off the skirt, so it is about 9.3 m across. | `band_pipes`, `box_z`, `box_size`, `band_top` |
 | Which way the engines face | The painted numbers and "TCA SN" serials, here and round the ring | Every engine's front faces away from the booster's axis | The engine clocking in `super_heavy.scad` |
+| Chines and the vertical pipe | The full-size original (9,504 px); the three chines' cut ends against the 1.3 m exits | The two chines on the left are about 3.2 m apart and the next one about 6.2 m further right, which fits the taller pair at 160° and 200° and the shorter chine at 301° seen from about 210°. The pipe that splits in a Y comes down between the taller pair, at about 172° to 180°. | Lines down the side (not modelled; see the B19 photo below) |
 | Finishes | Looked at | The skirt, the conduit band and its boxes, and the housings black. The Raptors dark charcoal with a satin sheen, the nozzles a little lighter than the powerheads, with white painted numbers. | The `black`, `nozzle` and `engine` materials |
 | Raptor plumbing | One outer engine square on, scaled to its 1.3 m exit (± 0.03 m) | The two coolant pipes, the manifold ring (0.82 m across at h ≈ 1.17 m to 1.26 m), the ring round the throat (0.55 m across), the two chamber rings, the two shielded valves and the ring of ports at h ≈ 2.47 m, as listed in dimensions.md's "Plumbing on the flight engines" | `raptor.scad` `coolant_pipes`, `core_rings`, `valve_pods`, `valve_lines`, `powerhead_ports`, the manifold ring in `sl_nozzle` |
 
@@ -252,8 +282,11 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Quantity | How | Result | Used in |
 |---|---|---|---|
 | Chines' bottom ends | Looked at | Cut at an angle: the inner corner meets the top of the band and the cut slopes up toward the outer face | `chine_cut` |
-| QD plates | Looked at | Two foil-wrapped plates just above the band, between two chines, either side of the vertical pipe. Probably the two QD plates, but their azimuths can't be read without a scale. | Aft skirt (unresolved) |
-| Vertical pipe | Looked at | Comes down the hull and splits in a Y onto it at the band's top (z ≈ 4.95 m) | Lines down the side (not modelled) |
+| QD plates | Looked at | Two foil-wrapped plates just above the band, between two chines, either side of the vertical pipe. Probably the two QD plates. | Aft skirt |
+| Scale and side | Checked again on the [full-size original](https://www.nasaspaceflight.com/wp-content/uploads/2026/02/COLLEEN_-_CRL00220.jpg) (5,584 px, saved as `nsf_b19_aft_conduits_no_engines_full.jpg`), using the band's 40 junction boxes as a scale: they are 9° apart, about 0.72 m at the band, and each 0.22 m wide | About 440 px/m. The two chines' faces then sit about 8.5 m apart, about 55° to 59° either side of the pipe, so they are the shorter pair at 59° and 301° and the camera faces the rudder side. The pipe is at about 0°, not on the tower side as dimensions.md guessed; Booster 20's photo shows a second one at about 176°. | `y_pipe` |
+| QD plates' size and place | Scaled as above | Hexagonal plates about 1.1 m across, standing out about 0.15 m in their foil, from z ≈ 5.0 m to 6.3 m, about 35° either side of the pipe: about 325° and 35° | `qd_plate_az`, `qd_plate_z`, `qd_plate` |
+| Vertical pipe | Looked at | Comes down the hull and splits in a Y onto it at the band's top (z ≈ 4.95 m); its two legs land about 0.6 m apart | `y_pipe` |
+| Round port | Scaled as above | A dark port inside a ring of holes, about 1 m across overall, directly above the left-hand QD plate: about 324°, z ≈ 7 m (± 0.5 m; the camera is close, so heights are rough) | `round_ports` |
 
 ## Starship
 
@@ -277,7 +310,10 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Payload bay docking ports | Offsets and heights | At about 140° and 220° (± 4°), z ≈ 34.5 m ± 0.5 m, centred about 0.9 m below the door | `docking_ports` |
 | Docking port housings | The length of housing that shows in the full-size original. The 140° housing barely reaches past the hull's outline. | All four show the same side, so their axes are parallel and point toward 180°. Each stands about 0.4 m ± 0.2 m out along its centreline, and the aft ones up to about 0.6 m. | `docking_ports` (third value of each) |
 | Raceways | Offsets | About 165° and 195° (± 4°), with rounded tops at z ≈ 35 m; bronze collars round both at z ≈ 21.5 m and 29.3 m (± 0.6 m) | `raceway_az`, `raceway_z` |
-| Other parts | Offsets and heights | Leeward Starlink dishes: dark squares about 0.75 m across at 148° and 212°, z ≈ 41 m. A band of vertical slats at z ≈ 6 m ± 1 m. A round port about 1 m across, ringed with holes, at 224°, z ≈ 9 m ± 0.8 m. Two flanged ports at 211° and 224°, z ≈ 31.3 m (with the nose close-up). | Vents, RCS, cameras (not modelled) |
+| Other parts | Offsets and heights | Leeward Starlink dishes: dark squares about 0.75 m across at 148° and 212°, z ≈ 41 m. A band of vertical slats at z ≈ 6 m ± 1 m. A round port about 1 m across, ringed with holes, at 224°, z ≈ 9 m ± 0.8 m. Two flanged ports at 211° and 224°, z ≈ 31.3 m (with the nose close-up). The rollout photo places these more closely. | `starship.scad` `starlink_az`, `vent_bands`, `ringed_ports`, `rcs_az` |
+| Aft vent band | The full-size original (about 80 px/m) | Vertical slats about 0.08 m wide and 0.12 m apart in a band about 0.95 m tall, standing a little proud, round the leeward side from one aft flap's root to the other | `vent_bands`, `vent_slat` |
+| Ringed port | The full-size original; the port at about 220° is seen almost face on | A dark centre about 0.7 m across inside rings of slots about 1.6 m across | `ringed_port` |
+| Attic vent hoods | The full-size original | Each raceway's lower end widens into a hood about 0.75 m wide that stands out from the hull and opens downward | `attic_vent` |
 | Tile test patches | Looked at | The patches at 218° show a hex pattern on the bare steel | Docking ports section |
 
 #### Ship 39 on the road by the Starfactory
@@ -297,10 +333,19 @@ The photos belong to their photographers and publishers, so they aren't in this 
 - **Photo:** [Ship-39-preparing-for-rollout-to-Masseys.jpg](https://www.nasaspaceflight.com/wp-content/uploads/2026/02/Ship-39-preparing-for-rollout-to-Masseys.jpg), 9504 × 5344, by Ceaser G for NASASpaceFlight, February 2026, in [Flight 12: Ship 39 rolls out to Masseys to begin testing](https://www.nasaspaceflight.com/2026/02/ship-39-masseys-testing/)
 - **Saved as:** `nsf_s39_rollout_catch_pins_leeward.jpg`
 - **Shows:** Ship 39 from its leeward side, both sides square on, with both catch pins in profile at the hull's edges under red covers.
-- **Scale:** the 9 m hull, 741 px across between its edges at mid-height (82 px/m; dimensions.md has about 81).
+- **Scale:** the 9 m hull, 741 px across between its edges at mid-height (82 px/m; dimensions.md has about 81). For the fine details, offsets across the hull use 82.2 px/m from the hull's centreline, which leans about 0.5° in the frame. The skirt's bottom edge on the near side (y ≈ 4,689) and the nose tip (y ≈ 475) put the camera looking up about 6.5°, which lifts a part on the near side of the hull by up to about 0.5 m; the heights below allow for that.
 
 | Quantity | How | Result | Used in |
 |---|---|---|---|
+| Camera direction | Fitted from the two leeward Starlink dishes and the two pairs of payload bay thrusters, each set taken as symmetric about 180° | About 177° | (the azimuths below) |
+| Forward flap hinges | Counted and placed along each flap's root | Three per flap, at the same heights on both: a small lower hinge at z ≈ 43.3 m, the bulkier central hinge with the control arm at z ≈ 45.2 m and a small upper hinge at z ≈ 47.7 m (± 0.3 m). Each shows as a fitting on the flap's root, about 0.4 m long (the central one about 0.8 m), with a strut across to the hull. | `fwd_hinges` |
+| Leeward Starlink dishes | Edges, offsets and heights | Dark rounded rectangles about 0.72 m wide and 0.82 m tall, centred at z ≈ 40.9 m, at about 147.5° and 212.5° (± 2°) | `starlink_az`, `starlink_z`, `starlink_size` |
+| Payload bay thrusters | Offsets and heights | Two pairs of round flanged ports at z ≈ 30.9 m (± 0.3 m): about 137° and 149°, and 211° and 223° (± 2°) | `rcs_az`, `rcs_z` |
+| Midway thrusters | Offsets and heights | A second set of the same ports at z ≈ 21.8 m, at the same azimuths as far as can be seen (the left pair is clear; a cable hangs across the right pair) | `rcs_z` |
+| Sensor window and small ports | Offsets and heights | A round window at about 188° and two small round ports side by side at about 170° and 174°, between the payload bay drogues, at z ≈ 34.5 m (± 0.3 m), their centres about 0.3 m above the drogues' | `sensor_window`, `small_ports` |
+| Vent bands | Heights and slat spacing | Three bands of vertical slats round the leeward side: z ≈ 32.0 m to 32.8 m below the door, 22.6 m to 23.2 m, and 4.9 m to 6.0 m. In the upper two, the slats between the raceways are about twice as far apart. | `vent_bands`, `vent_slat` |
+| Ringed ports | Offsets and heights | Round ports in rings of slots at about 136°, z ≈ 25.3 m, and about 215°, z ≈ 9.2 m (± 3°, ± 0.3 m) | `ringed_ports` |
+| Tiled tip | Where the black tip meets the steel on the leeward centreline | z ≈ 47.9 m (± 0.3 m), about 4.2 m below the tip, edged with a row of light closeout tiles. A dark slot, probably a header tank vent, sits in the tiles about 1.3 m above that edge. | Heat shield; `tip_tiles` |
 | Catch pin positions | Where they stand out from the hull | One each side, at about 90° and 270° (± 10°), at the same height | Catch and lift points; `catch_az` |
 | Catch pin fairing | Scaled from the hull | The top slopes down and out from the hull at z ≈ 39.9 m to an upright outer end about 0.44 m ± 0.05 m off the hull and about 0.15 m tall; the underside is level at z ≈ 39.0 m ± 0.3 m. Checked again: the outer end is 36 px beyond the hull's edge and the fairing about 80 px tall. | `catch_z`, `catch_out`, `catch_end` |
 | Tile line's step | Height of the step where the tiles widen | z ≈ 39.5 m ± 0.3 m, level with the pins and about 1 m above the nosecone's base (an earlier 38 m from the Starfactory photo is superseded) | Heat shield; `nose_tile_step` |
@@ -330,10 +375,29 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Docking port mouths | Scaled from the hull, before the drogues were fitted | Keyhole-shaped: a round opening with a notch about 0.2 m wide and 0.15 m deep at the bottom | `port_notch` |
 | Tile line | Where the tiles end on the payload bay | About 104° to 105° | `tile_line` |
 | Raceways | Offsets | About 165° and 195°, each a ladder-like cover 0.5 m to 0.75 m wide | `raceway_az`, `raceway_w` |
-| Ports | Offsets and heights | A small round port at about 185°, z ≈ 34.6 m. Two round flanged ports at about 211° and 224°, z ≈ 31.3 m, which may be roll thrusters. | Vents, RCS, cameras (not modelled) |
+| Ports | Offsets and heights | A small round port at about 185°, z ≈ 34.6 m. Two round flanged ports at about 211° and 224°, z ≈ 31.3 m, which may be roll thrusters. The rollout photo shows the matching pair on the other side. | `sensor_window`, `rcs_az` |
 | Catch pins | The full-size copy, from close below | The pins' shape under their covers, used with the rollout photo and the close-up below | Catch and lift points |
-| Slots below the door | Looked at | A band of vertical slots round the leeward side just below the door (dimensions.md puts it at z ≈ 32.3 to 33.3 m without naming its photo) | Payload bay (not modelled) |
+| Slots below the door | Looked at | A band of vertical slots round the leeward side just below the door (dimensions.md puts it at z ≈ 32.3 to 33.3 m without naming its photo) | `vent_bands` |
+| Forward flap hinges | The full-size copy, from close below | Each hinge is a foil-wrapped fitting on the flap's root with a strut from the hull: the upper fitting about 0.4 m across with a strut about 0.5 m long and 0.06 m thick; the central one a bulkier bracket about 0.75 m by 0.5 m with a dark box, carrying the control arm; the lower one a strut about 1.2 m long and 0.07 m thick. A wrapped cable runs along the root between them. | `fwd_hinges` |
+| Leeward Starlink dishes | The full-size copy | Each is a box with rounded corners, covered in black tiles, standing out from the hull: its side face shows about 20 px wide, seen at about 50° to the side, so it stands about 0.1 m proud | `starlink_size` |
+| Sensor window | The full-size copy, scaled from the hull | A round window about 0.7 m across (190 px wide; the steep view squashes it to an ellipse 130 px tall) in a flange about 0.86 m across with 32 bolts, on a plate about 1.23 m across. The rollout photo agrees: about 0.71 m inside a flange about 0.91 m across. What it's for isn't documented; between the payload bay drogues it would suit a docking sensor such as DragonEye. | `sensor_window` |
+| Small ports | The full-size copy | Two round grilles about 0.2 m across, about 0.37 m apart, in one figure-8 flange | `small_port_d` |
+| Vent slats | The full-size copy | Raised slats about 0.07 m wide and 0.65 m tall, about 0.12 m apart; about 0.26 m apart between the raceways | `vent_slat` |
+| Thrusters | The full-size copy | Each a round opening about 0.37 m across in a flange about 0.48 m across, inside a ring of 10 to 12 slotted bolt holes about 0.62 m across | `rcs_d` |
 | Steel finish | Looked at | Mirror-bright, reflecting the sky above and the ground below. Weld seams run between the rings, and each ring is a slightly different shade. | The `steel` material and its ring seams (`scripts/render_blender.py`) |
+
+#### Ship 39's nose from windward at the tower
+
+- **Photo:** [2Q5A8382-wmarked.jpg](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8382-wmarked.jpg), 7647 × 5100, by Max Evans for NASASpaceFlight, May 2026, in [Flight 12 readies for the debut of SpaceX's next Ship evolution](https://www.nasaspaceflight.com/2026/05/fligth12-debut-spacex-ship-evolution/)
+- **Saved as:** `nsf_v3_ship_nose_windward_at_tower.jpg`
+- **Shows:** the tiled windward side of a V3 ship's nose on the tower, close up, with both forward flaps stowed and their static aero strips.
+- **Scale:** the hexagonal tiles, about 0.25 m across; none needed.
+
+| Quantity | How | Result | Used in |
+|---|---|---|---|
+| Starlink dishes on the windward side | Looked for along the sides of the heat shield | Nothing that stands out from the tiles. NSF puts two dishes on the sides of the heat shield, so they may sit flush under tiles. | (not modelled) |
+| White tiles | Looked at | A few single tiles are white. SpaceX painted tiles white as imaging targets for Flight 12, so they're paint, not hardware. | (none) |
+| Forward flaps from windward | Looked at | Only the tiled static aero shows along the hinge line; the hinges are on the leeward side | `fwd_hinges` (leeward only) |
 
 #### A V3 ship's catch pin
 
@@ -347,13 +411,15 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Fairing width | Scaled from the tiles | About 0.55 m across its sloping top and outer end, and about 1.5 m where its underside meets the hull, its sides sloping out to the hull | `catch_w` |
 | Steel pad | Scaled from the tiles | About 0.33 m wide and 0.1 m tall. See [Differences](#differences): checked again, it is 160 px × 50 px, 0.30 m × 0.09 m. | `catch_pad` |
 | Tiles | Looked at, and the dark gaps found along rows of tiles | Regular hexagons with their points at top and bottom, in level rows about 130 px apart. The gaps are about 4 px, 3% of a tile, so roughly 7 mm. A light pin sits near each tile's top corner. The black glaze reflects the sky, and the tiles vary a little in shade. | Heat shield; the `tiles` material (`TILE_PITCH`, `TILE_GAP` in `scripts/render_blender.py`) |
+| Edge of the tiles | Looked at, along the tile line on the left and along the step below | The tiles don't stop in a zigzag of whole hexagons. A row of cut tiles, mostly half hexagons, makes a straight edge, and each is bevelled down toward the steel. The bevels read about 50 px to 60 px across (about 0.1 m). | `tile_ramp` |
+| Tile thickness | From the bevels' width and the angle they're seen at (the tile line here is turned about 40° away from the camera) | A bevel showing about 0.1 m across at that angle is a ramp about 0.12 m to 0.15 m long; at a slope of 15° to 20° the tiles are about 40 mm thick, ± 15 mm (rough: SpaceX hasn't published the thickness, and no photo shows a tile's edge square on) | `tile_t` |
 
 ### Aft end and docking ports
 
 #### A V3 ship's aft end on its transport stand
 
 - **Photo:** [COLLEEN-CRL00300-wmarked-scaled.jpg](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/COLLEEN-CRL00300-wmarked-scaled.jpg), 2560 × 1441, by Colleen Liedtke for NASASpaceFlight, May 2026, in [Flight 12 readies for the debut of SpaceX's next Ship evolution](https://www.nasaspaceflight.com/2026/05/fligth12-debut-spacex-ship-evolution/)
-- **Saved as:** `nsf_v3_ship_aft_drogues_and_qd.jpg`
+- **Saved as:** `nsf_v3_ship_aft_drogues_and_qd.jpg`, and the [full-size original](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/COLLEEN-CRL00300-wmarked.jpg) (5871 × 3304, about 457 px/m) as `nsf_v3_ship_aft_drogues_and_qd_full.jpg`
 - **Shows:** a V3 ship's aft end on its transport stand, from within about 1° of the leeward centreline. Both aft drogues, the QD plate, the silver hoods at the raceways' lower ends and the tiles at both edges all show. dimensions.md calls it "the aft close-up".
 - **Scale:** the 9 m hull, 1,793 px between its edges (199 px/m), about 207 px/m on the near side, allowing about 5% because it is closer to the camera. z is measured from the top of the stand, where the skirt's bottom edge sits.
 
@@ -362,9 +428,41 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | QD plate | Scaled from the hull | At 180° ± 2°, z ≈ 2.6 to 3.5 m ± 0.2 m, its main connectors at about 3.0 m. Two plates side by side between guide rails, each about 0.27 m wide and 0.87 m tall, about 0.8 m wide overall; the right-hand one has a grid of 8 small connectors. | `qd_z`, `qd_w`, `qd_connector_z` |
 | Aft docking ports | Offsets and heights | At about 156° and 204° (± 2°), z ≈ 2.2 to 2.9 m ± 0.2 m (centre 2.55 m); both seen square on, so their axes point straight out to leeward | `docking_ports` |
 | Housings and drogues | Each part against its own blurred width | Housings about 0.8 m ± 0.05 m across. Each drogue cone's rim is about 0.6 m across, held by 8 bolts on a circle about 0.5 m across, narrowing to a central hole about 0.07 m across. A tab about 0.2 m wide hangs 0.14 m below the rim, with a small white label. | `port_d`, `drogue_d`, `drogue_hole`, `drogue_tab` |
-| Attic vents | Offsets and heights | Silver hoods about 0.75 m wide, open at the bottom, at about 167° and 193° (± 2°), their lower edges at z ≈ 2.4 m ± 0.2 m: the raceways' lower ends | `raceway_az` (13° at the lower end), `raceway_z` |
+| Attic vents | Offsets and heights | Silver hoods about 0.75 m wide, open at the bottom, at about 167° and 193° (± 2°), their lower edges at z ≈ 2.4 m ± 0.2 m: the raceways' lower ends | `raceway_az` (13° at the lower end), `raceway_z`, `attic_vent` |
 | Thin pipes | Offsets | About 6 cm across with orange tips, at about 162° and 198° (± 2°), down to z ≈ 0.9 m | Lines down the side (not modelled) |
 | Tile line | Where the tiles end at the skirt | About 108° | Heat shield |
+| Aft flap hinges | The full-size original, both flaps | Hinge fittings on the hull beside each flap's root at z ≈ 0.5 m and 3.0 m (± 0.1 m): the upper a box with a round bearing about 0.3 m across, the lower a bracket about 0.4 m across. With four hinges on the root and the third from the top the central one (Ringwatchers), the 3.0 m hinge is the central one. The upper two are out of the frame. | `aft_hinges` |
+| Aft flap thrusters | The full-size original | A dark plate low on each flap's leeward face, beside its root, carrying 12 octagonal outlets in four rows about 0.33 m apart, the lowest row about 0.55 m above the flap's bottom (z ≈ 0.55 m to 1.6 m). Both flaps are turned toward the camera here, so lengths across them are foreshortened; the truss photo below gives their size. | `rcs_outlets`, `rcs_outlet_pitch`, `rcs_outlet_start` |
+| Pipes by the flap roots | Looked at | Four or five steel pipes run down the hull beside each flap's root and bend into it near the bottom | `rcs_pipes` |
+| Aft vent band | Looked at | The band of slats round the leeward side runs across the top of the frame, between the flap roots | `vent_bands` |
+
+#### A V3 ship's aft flap above the hot-staging truss
+
+- **Photo:** [2Q5A8497-wmarked.jpg](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8497-wmarked.jpg), 7280 × 4856, by Max Evans for NASASpaceFlight, May 2026, in [Flight 12 readies for the debut of SpaceX's next Ship evolution](https://www.nasaspaceflight.com/2026/05/fligth12-debut-spacex-ship-evolution/)
+- **Saved as:** `nsf_v3_truss_and_ship_aft_flap_closeup.jpg`
+- **Shows:** a V3 ship stacked on its booster, close up at the hot-staging truss. The lower end of one aft flap is at the top right, with its thruster outlets, the pipes that feed them and the lowest hinge. The booster's truss, dome and the ports over its fin pods fill the rest.
+- **Scale:** the booster's 9 m hull, about 5,460 px across (about 607 px/m); the ship's flap is at about the same distance.
+
+| Quantity | How | Result | Used in |
+|---|---|---|---|
+| Aft flap thrusters | Scaled from the hull | 12 hexagonal outlets about 0.18 m across, each standing about 0.1 m out from a plate on the flap's leeward face, in staggered rows about 0.3 m apart across the flap | `rcs_outlet`, `rcs_outlet_pitch` |
+| Pipes | Scaled from the hull | A bundle of four or five steel pipes about 0.12 m across comes down the hull beside the flap's root and turns into the root in U-bends just above the outlets, which fits NSF's report of thrusters fed by pipes through the aft flap hinges | `rcs_pipes` |
+| Lowest aft hinge | Scaled from the hull | A link about 1 m long from a clevis on the hull to the flap's root, about 0.4 m above the flap's bottom, with a box about 0.35 m across beside it | `aft_hinges` |
+| Booster ports | Looked at | Each round port over a fin pod sits on a hexagonal plate | `super_heavy.scad` `port_plate` |
+| Ship's skirt | Looked at | The skirt's bottom edge is a plain ring with small chevron marks; nothing hangs below it | (none) |
+
+#### Ship 39's lower heat shield from windward
+
+- **Photo:** [Ship-39-lower-heat-shield.jpg](https://www.nasaspaceflight.com/wp-content/uploads/2026/02/Ship-39-lower-heat-shield.jpg), 9504 × 5344, by Ceaser G for NASASpaceFlight, February 2026, in [Flight 12: Ship 39 rolls out to Masseys to begin testing](https://www.nasaspaceflight.com/2026/02/ship-39-masseys-testing/)
+- **Saved as:** `nsf_s39_lower_heat_shield_windward.jpg`
+- **Shows:** the tiled windward side of Ship 39's lower half on its stand, with both aft flaps stowed and seen edge on, and their static aero strips and caps.
+- **Scale:** the 9 m hull, about 1,700 px across (189 px/m).
+
+| Quantity | How | Result | Used in |
+|---|---|---|---|
+| Tiles round the aft dome | Height of a band of differently cut tiles | z ≈ 5.0 m to 6.1 m, level with the leeward vent band; NSF reports specially cut transition tiles at the dome seams | Heat shield (not modelled: the model's tiles are one surface) |
+| Hinges from windward | Looked at | Hidden: the static aero strip covers each aft flap's hinge line, edged with white gap filler and small clips about 0.5 m apart | `aft_hinges` (on the leeward side only) |
+| Caps | Looked at | Each leading edge aero cap is bare steel on Ship 39, not tiled | Flaps (the model's caps are tiled) |
 
 #### Ship 39's QD plates
 
@@ -570,6 +668,9 @@ These photos come from two Ringwatchers articles, which credit each photographer
 
 ## Photos checked that gave nothing usable
 
+- For the two Starlink dishes NSF puts on the sides of the heat shield: SpaceX's photo of Ship 39's fifth rollout from windward ([HItp8fZWkAAycsk](https://pbs.twimg.com/media/HItp8fZWkAAycsk?format=jpg&name=orig), 3500 × 2333, on X, credited to SpaceX in Ringwatchers' [Flight 12 history](https://ringwatchers.com/article/s39-b19-history); saved as `spacex_s39_rollout_windward.jpg`), NASASpaceFlight's [2Q5A8275](https://www.nasaspaceflight.com/wp-content/uploads/2026/05/2Q5A8275-wmarked.jpg) of the stack on the tower from windward (7449 × 4968, Max Evans, May 2026; saved as `nsf_v3_stack_windward_on_tower.jpg`), and the windward nose and lower heat shield photos above. None shows a dish standing out from the tiles, so the models leave those two out.
+- For the booster's Starlink antennas: none of the booster photos here shows one, and none is documented.
+
 - [Ship 41 waiting to be stacked on Booster 21](https://www.nasaspaceflight.com/wp-content/uploads/2026/09/Ship-41-waiting-to-be-stacked-on-Booster-21-scaled.jpg) (NASASpaceFlight, September 2026), checked with the truss photos, the B20 lift photo and the stacked photo for the actuators that hold the ship to the booster. None of them shows the actuators.
 - For the ship's engine layout, about 18 V3 photos were checked: on the stand, in Mega Bay, at static fire, during stacking and at splashdown, plus the aft close-up. None shows the engines from below together with something that fixes their clocking. As V2 stand-ins, these were also checked: the [Ship 37 gallery on the Starship SpaceX Wiki](https://starship-spacex.fandom.com/wiki/Ship_37_(S37)), NASASpaceFlight's [Ship 35](https://www.nasaspaceflight.com/2025/05/ship-35-sf-spacex-has-fleet-vehicles-flight/) and [Ship 37](https://www.nasaspaceflight.com/2025/08/ship-37-spin-prime-engine-swap/) articles (2025), SpaceX's [2022 photos of Ship 24's engines](https://interestingengineering.com/innovation/spacex-mars-raptor-engine-setup) (V1, and too oblique), SpaceX's [Ship 25 static-fire photos](https://www.space.com/spacex-starship-ship-25-engine-test-fire-photos) and SpaceX's [Flight 14 hot-staging video](https://starlust.org/video/w130-mury20fo/), which looks down from the ship. None gives a usable bottom view.
 
@@ -583,5 +684,7 @@ Checking the photos again for this file turned up these differences from dimensi
 - **Stacked photo's viewing angle.** dimensions.md's ship height check corrects for the camera looking up about 25°, but its truss and dome notes read about 6° from the same photo. The skirt's bottom edge is nearly straight in the photo, which fits 6°: at 25° it would sag about 20 px. So the 51.7 m ± 1.7 m height check needs redoing. The models use the published 52.1 m.
 - **Catch pin's steel pad** (catch pin close-up). 0.30 m × 0.09 m against dimensions.md's 0.33 m × 0.1 m, about 10% smaller, within what the tiles' size allows as a scale.
 - **Raptor photo's scale** (Raptors 1, 2 and 3). 592 px/m in the 3,840 px copy against dimensions.md's 573 px/m, which came from a smaller copy. The engine's length comes out the same, 2.90 m against 2.91 m.
+
+- **Ports above the fin pods** (Starfactory side view of a V3 booster). They read about 2.65 m above the fins' centre there, against dimensions.md's 2 m from the truss close-up. The correction for the camera looking up is rough (± 0.3 m), so the model keeps 2 m.
 
 These checks agreed with dimensions.md to within 5%: the rollout photo's scale (82 px/m against 81), the aft close-up's (about 209 px/m on the near side against 207), the nose close-up's (73.6 px/m against 73), the stacked photo's (10.8 px/m), the outer exits' gaps in Booster 20's aft end, E1's drop to the plate (2.9 m against 3.0 m), the lifting pin block in Mega Bay 1, the aft flap's taper, the aft cap's height, the ship's catch pin fairing and where the chopsticks hold Ship 42.

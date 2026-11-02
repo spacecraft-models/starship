@@ -9,6 +9,7 @@
             "pin_d": "2",
             "pin_depth": "6",
             "catch_pins": "false",
+            "fine_details": "false",
             "section_z": "[]",
             "loose_flaps": "false"
         },
@@ -21,6 +22,7 @@
             "pin_d": "2",
             "pin_depth": "6",
             "catch_pins": "true",
+            "fine_details": "false",
             "section_z": "[25620]",
             "loose_flaps": "true"
         }

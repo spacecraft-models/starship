@@ -14,6 +14,7 @@
             "pin_d": "2",
             "pin_depth": "6",
             "catch_pins": "false",
+            "fine_details": "false",
             "section_z": "[]",
             "loose_fins": "false"
         },
@@ -30,6 +31,7 @@
             "pin_d": "2",
             "pin_depth": "6",
             "catch_pins": "false",
+            "fine_details": "false",
             "section_z": "[36000, 65100]",
             "loose_fins": "false"
         }

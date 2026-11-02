@@ -8,11 +8,12 @@ This work is not affiliated with or endorsed by SpaceX.
 
 | Path | What it holds |
 |---|---|
-| `model/starship.scad` | The ship (upper stage): the hull and nosecone, the forward and aft flaps, the payload bay door, the docking ports and quick disconnect plate, the two catch pins on the nose, and six Raptor engines |
-| `model/super_heavy.scad` | The booster: the hull and chines, the aft skirt and thrust plate, 33 Raptor engines, three grid fins (the two catch fins with their lifting pins) and the hot-staging truss the ship sits on |
+| `model/starship.scad` | The ship (upper stage): the hull and nosecone, the forward and aft flaps with their hinges, the payload bay door, the docking ports and quick disconnect plate, the two catch pins on the nose, six Raptor engines, and fine details: the Starlink dishes, thrusters, vents and ports, and the heat shield's raised, bevelled edge |
+| `model/super_heavy.scad` | The booster: the hull and chines, the aft skirt and thrust plate, 33 Raptor engines, three grid fins (the two catch fins with their lifting pins), the hot-staging truss the ship sits on, and fine details: the band of vent slats and its bell vents, the ports, the QD plates and the pipe down the rudder side |
 | `model/raptor.scad` | The Raptor 3 and Raptor 3 Vacuum engines, which both vehicles use |
 | `model/gridfins.scad` | The booster's grid fin |
 | `model/materials.scad` | The materials the parts are made of (stainless steel, heat-shield tiles, the engines' metals and so on), with the colours previews draw them in |
+| `model/details.scad` | Small parts both vehicles carry, such as ports, windows and bands of vent slats |
 | `model/super_heavy.json`, `model/starship.json` | Print presets for the two vehicles: "1:460 print" in one piece each, and "1:230 print" in sections that pin together, with loose forward flaps. Each is a set of saved settings that scale a model and simplify it for printing |
 | `dimensions.md` | The sizes the models are built from: the full stack, each vehicle in detail and the Raptor engines, plus earlier versions, what SpaceX hasn't published, and the sources. The detailed sections tag each figure as published, reported or estimated from photos. |
 | `source_analysis.md` | The photos the estimated sizes were measured from: a link to each original, what was measured or counted in it and how, and which model settings use the result |
