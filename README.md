@@ -14,6 +14,7 @@ This work is not affiliated with or endorsed by SpaceX.
 | `model/gridfins.scad` | The booster's grid fin |
 | `model/super_heavy.json`, `model/starship.json` | Print presets for the two vehicles: "1:460 print" in one piece each, and "1:230 print" in sections that pin together, with loose forward flaps. Each is a set of saved settings that scale a model and simplify it for printing |
 | `dimensions.md` | The sizes the models are built from: the full stack, each vehicle in detail and the Raptor engines, plus earlier versions, what SpaceX hasn't published, and the sources. The detailed sections tag each figure as published, reported or estimated from photos. |
+| `source_analysis.md` | The photos the estimated sizes were measured from: a link to each original, what was measured or counted in it and how, and which model settings use the result |
 | `scripts/render_openscad.sh` | Renders a `.scad` file from three angles, exports an STL and makes a summary sheet |
 | `scripts/render_freecad.sh`, `scripts/render_freecad.py` | The same for a FreeCAD document |
 | `scripts/make_sheet.py` | Lays out the summary sheet for both render scripts, with the STL's size and volume |
@@ -21,7 +22,7 @@ This work is not affiliated with or endorsed by SpaceX.
 | `scripts/print_check.py` | Checks an STL layer by layer for what needs support and what is too thin to print |
 | `CONTRIBUTING.md` | How to open the models in OpenSCAD and make PNGs and STLs, and how the print presets and settings work |
 
-Git ignores two more folders: `renders/`, where the render scripts write their PNGs, STLs and sheets, and `source_img/`, reference photos used to measure the estimated dimensions. `dimensions.md` lists where each photo came from.
+Git ignores two more folders: `renders/`, where the render scripts write their PNGs, STLs and sheets, and `source_img/`, local copies of the reference photos used to measure the estimated dimensions. `source_analysis.md` links to each photo online.
 
 ## Quick start
 
