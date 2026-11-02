@@ -58,7 +58,7 @@ This section covers where things sit on the V3 booster. Each figure is tagged **
 |---|---|
 | Barrel | 36 stacked steel rings: a 25-ring main tank assembly (the 2-ring aft section, five 4-ring LOX barrels and the 3-ring common-dome section) with an 11-ring forward section on top (two CH4 barrels plus the staging ring that holds the forward dome). **Reported** (NSF Starfactory article; Starship SpaceX Wiki, B19) |
 | Order, bottom to top | Aft section with the engines, LOX tank, common dome, CH4 tank, forward dome, hot-staging truss. **Reported** |
-| Ring height | Standard V3 rings are about 2 m tall. **Reported** (NSF Sept 2025, describing the B18.3 forward test tank). With the engines counted in the 72.3 m (see the reference frame), the barrel from the skirt's bottom edge (z ≈ 2.75 m) to the base of the 4 m hot-staging ring (z ≈ 68.3 m) is about 65.5 m. If the 36 rings fill that span, they average about 1.8 m each, close to the 1.83 m (6 ft) rings of earlier boosters (**Estimated**). Measure before drawing panel lines. |
+| Ring height | Standard V3 rings are about 2 m tall. **Reported** (NSF Sept 2025, describing the B18.3 forward test tank). With the engines counted in the 72.3 m (see the reference frame), the barrel from the skirt's bottom edge (z ≈ 2.75 m) to the base of the 4 m hot-staging ring (z ≈ 68.3 m) is about 65.5 m. If the 36 rings fill that span, they average about 1.8 m each, close to the 1.83 m (6 ft) rings of earlier boosters (**Estimated**). In the truss close-up the weld seams down the tank wall are about 1.86 m ± 0.05 m apart (**Estimated**; see source_analysis.md), which fits 35 standard rings below the 4 m staging ring. The render script draws seams at that spacing, one of them level with the top of the tank wall; the model itself has no panel lines. |
 | Tanks | The CH4 tank is shorter and the LOX tank longer than on V2. **Reported** (NSF). Dome positions and tank lengths aren't published. |
 | Fuel transfer tube | About 50 m tall and 3 m wide, carrying methane from the CH4 tank down through the LOX tank to the engines. **Reported** (NSF). SpaceX calls it roughly the size of a Falcon 9 first stage (**Published**). It is internal. |
 | LOX landing tank | A separate tank that feeds the inner 13 engines, now beside the main LOX tank. **Reported** (NSF; Starship SpaceX Wiki). It is internal. |
@@ -312,6 +312,7 @@ Domes (**Estimated**, rough). The weld lines don't show from outside, so these c
 ### Heat shield
 
 - About 18,000 hexagonal tiles, pinned with small gaps for expansion, over a secondary ablative layer (**Reported**, Wikipedia).
+  - Each tile is a regular hexagon about 0.25 m across, set in level rows with its points at top and bottom. The gaps are about 3% of a tile, roughly 7 mm, and each tile shows a light pin near its top corner (**Estimated**, catch pin close-up; see source_analysis.md). The render script draws the tiles this way; the models don't.
 - V3 changes (**Reported**, NSF May 2026):
   - There is a new, simpler tile pin.
   - One horizontal seam was removed from the nosecone.

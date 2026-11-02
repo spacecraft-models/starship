@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Render an OpenSCAD model from three angles, export an STL and build a summary sheet.
 # Usage: [EDGES=0] scripts/render_openscad.sh MODEL.scad [OUTDIR]
-# OUTDIR defaults to renders/<model name>. Colours come from the model's color() calls.
+# OUTDIR defaults to renders/<model name>. Colours come from the materials in model/materials.scad.
 # Facet edges are outlined unless EDGES=0, which suits curved models with many facets.
 set -euo pipefail
 [ $# -ge 1 ] || { echo "usage: $0 MODEL.scad [OUTDIR]" >&2; exit 2; }

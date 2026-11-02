@@ -6,6 +6,9 @@
 // Boosters 19 and 20 (dimensions.md, "Plumbing on the flight engines"): the engine's front, where its
 // number is painted, faces +X, and its two coolant pipes run down its sides, the bigger one on +Y,
 // with a shielded valve above each. Looking at the front, +Y is on the right.
+// Each part's material, and its colour in previews, comes from materials.scad.
+
+use <materials.scad>
 
 /* [Print] */
 // Print at 1:model_scale. 1 is full size; 20 makes the RVac 227 mm tall.
@@ -18,6 +21,10 @@ engine_detail = 2; // [1:Simple, 2:Full]
 // The thinnest part allowed on the print, in mm at print size: the engine's neck is thickened to at
 // least this across. 0 keeps it true to size.
 min_feature = 0; // [0:0.1:3]
+
+/* [Materials] */
+// Draws only the parts made of one material, from materials.scad. "all" draws the whole engine.
+material = "all"; // [all, nozzle, engine, nozzle_extension]
 
 /* [Hidden] */
 // Sea-level Raptor 3 with a 1.3 m exit: [h, r] in metres, h up from the nozzle exit
@@ -75,10 +82,6 @@ vac_ext_top = 1.8; // the junction ring between the extension and the upper bell
 vac_bell_top = 2.7;
 vac_ring = [0.25, 0.35, 1.185]; // stiffening ring near the exit: bottom h, top h, radius
 
-dark = [0.32, 0.31, 0.3];
-metal = [0.46, 0.46, 0.48];
-light = [0.72, 0.72, 0.74];
-
 // Height of the top of the top plate above the nozzle exit, in mm
 function raptor_sl_mount(exit = 1300) = sl_mount * 1000 * exit / 1300;
 function raptor_vac_mount(exit = 2400, sl_exit = 1300) =
@@ -122,7 +125,7 @@ module pipe(path, r, n = 10) {
 module raptor_core(k, detail = 2, min_r = 0) {
     s = 1000 * k;
     function at(p) = [p[0] * s, (p[1] - sl_throat) * s]; // [y, h] in metres to [y, z] in mm
-    color(metal) if (detail < 2) rotate_extrude() polygon(concat(
+    made_of("engine") if (detail < 2) rotate_extrude() polygon(concat(
         [[0, (simple_core[0][0] - sl_throat) * s]],
         [for (p = simple_core) [max(p[1] * s, min_r), (p[0] - sl_throat) * s]],
         [[0, (simple_core[len(simple_core) - 1][0] - sl_throat) * s]]));
@@ -148,7 +151,7 @@ module raptor_core(k, detail = 2, min_r = 0) {
 // of the plumbing, and nothing on the engine is narrower than min_r.
 module raptor_sl(exit = 1300, wall = 40, detail = 2, min_r = 0) {
     k = exit / 1300;
-    color(dark) rotate_extrude() polygon(nozzle_outline(sl_nozzle, sl_bell_top, wall, k, min_r));
+    made_of("nozzle") rotate_extrude() polygon(nozzle_outline(sl_nozzle, sl_bell_top, wall, k, min_r));
     translate([0, 0, sl_throat * 1000 * k]) raptor_core(k, detail, min_r);
 }
 
@@ -157,18 +160,18 @@ module raptor_sl(exit = 1300, wall = 40, detail = 2, min_r = 0) {
 module raptor_vac(exit = 2400, wall = 40, sl_exit = 1300, detail = 2, min_r = 0) {
     kv = exit / 2300;
     s = 1000 * kv;
-    color(light) {
+    made_of("nozzle_extension") {
         rotate_extrude() polygon(nozzle_outline([for (p = vac_nozzle) if (p[0] <= vac_ext_top) p], vac_ext_top, wall, kv, min_r));
         rotate_extrude() translate([1.12 * s, vac_ring[0] * s])
             square([(vac_ring[2] - 1.12) * s, (vac_ring[1] - vac_ring[0]) * s]);
     }
-    color(dark) rotate_extrude()
+    made_of("nozzle") rotate_extrude()
         polygon(nozzle_outline([for (p = vac_nozzle) if (p[0] >= vac_ext_top) p], vac_bell_top, wall, kv, min_r));
     translate([0, 0, vac_nozzle[len(vac_nozzle) - 1][0] * s]) raptor_core(sl_exit / 1300, detail, min_r);
 }
 
 // One of each, side by side with their fronts facing -Y
-scale(1 / model_scale) {
+scale(1 / model_scale, $material = material) {
     min_r = min_feature * model_scale / 2;
     translate([-1700, 0, 0]) rotate([0, 0, -90]) raptor_sl(wall = nozzle_wall, detail = engine_detail, min_r = min_r, $fn = 96);
     translate([1100, 0, 0]) rotate([0, 0, -90]) raptor_vac(wall = nozzle_wall, detail = engine_detail, min_r = min_r, $fn = 96);

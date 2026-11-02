@@ -10,6 +10,9 @@
 // edge to the middle of that cross plate. Only the underside is toothed; the top face is flat.
 // Previews draw the plates' notched lower edges, but the STL leaves them flat, because the notches
 // would make it far slower to export.
+// The fin's material, and its colour in previews, comes from materials.scad.
+
+use <materials.scad>
 
 /* [Print] */
 // Print at 1:model_scale. 1 is full size; 20 makes the fin 197 mm long.
@@ -22,6 +25,10 @@ min_feature = 0; // [0:0.1:3]
 // Draws only every this-many plates of the lattice each way, for a coarser lattice whose holes stay
 // open at small sizes. 1 is the real lattice.
 fin_lattice_step = 1; // [1:1:4]
+
+/* [Materials] */
+// Draws only the parts made of one material, from materials.scad. "all" draws the whole fin.
+material = "all"; // [all, grid_fin]
 
 /* [From dimensions.md] */
 // Length from the root to the tip: the 4.2 m the fin reaches out from the hull, less the 0.2 m its
@@ -154,4 +161,4 @@ module grid_fin(lattice = true, min_t = 0, step = 1) {
     } else translate([0, 0, z0]) linear_extrude(depth) fin_2d(corners, xc, n, lattice, bar, edge, step);
 }
 
-scale(1 / model_scale) color([0.5, 0.5, 0.52]) grid_fin(fin_lattice, min_feature * model_scale, fin_lattice_step);
+scale(1 / model_scale, $material = material) made_of("grid_fin") grid_fin(fin_lattice, min_feature * model_scale, fin_lattice_step);

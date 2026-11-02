@@ -10,9 +10,11 @@
 // Azimuths are dimensions.md's: 0 is the rudder grid fin, under the ship's windward side,
 // increasing counterclockwise seen from above. It faces +Y like the ship's windward side, so the
 // default render views look at the tower side, where the raceway runs.
+// Each part's material, and its colour in previews, comes from materials.scad.
 
 use <raptor.scad>
 use <gridfins.scad>
+use <materials.scad>
 
 /* [Print] */
 // Print at 1:model_scale. 1 is full size; 300 makes the booster 243 mm tall.
@@ -65,6 +67,10 @@ loose_fins = false;
 // it in its slot
 tab_depth = 3; // [1:0.5:10]
 fit_clearance = 0.15; // [0:0.05:0.5]
+
+/* [Materials] */
+// Draws only the parts made of one material, from materials.scad. "all" draws the whole booster.
+material = "all"; // [all, steel, black, aft_shield, dome, grid_fin, bronze, nozzle, engine]
 
 /* [From dimensions.md] */
 // Top of the hot-staging truss, where the ship sits
@@ -197,24 +203,16 @@ strut_t = max(strut_d, min_t);         // the struts' diameter, and at their tap
 strut_end = max(strut_d / 4, min_t);
 wall = nozzle_wall > 0 ? max(nozzle_wall, min_t) : 0; // the nozzles' walls, thickened for printing
 fin_zc = (fin_z[0] + fin_z[1]) / 2;
-steel = [0.78, 0.79, 0.81];
-raceway_steel = [0.66, 0.67, 0.69];
-dark = [0.22, 0.22, 0.24];
-plate_grey = [0.42, 0.42, 0.44];
-fin_grey = [0.5, 0.5, 0.52];
-bearing_bronze = [0.45, 0.38, 0.28];
-dome_steel = [0.7, 0.68, 0.63];
-pin_steel = [0.6, 0.57, 0.52];
 
 function az(a) = a + 90; // dimensions.md azimuth to OpenSCAD's angle from +X
 
 // The tank barrel from the top of the conduit band to the top of the tank wall
-module barrel() color(steel) translate([0, 0, band_top]) cylinder(h = wall_top - band_top, r = R, $fn = segments);
+module barrel() made_of("steel") translate([0, 0, band_top]) cylinder(h = wall_top - band_top, r = R, $fn = segments);
 
 // The black aft skirt, flush with the hull from its bottom edge up to the top of the conduit band.
 // The band is pipes running all the way round the skirt, with a row of junction boxes. Below it,
 // the skirt has a small rectangular opening between each pair of outer engines.
-module aft_skirt() color(dark) {
+module aft_skirt() made_of("black") {
     difference() {
         rotate_extrude($fn = segments) translate([R - skirt_wall, skirt_bottom])
             square([skirt_wall, band_top - skirt_bottom + 10]);
@@ -229,14 +227,14 @@ module aft_skirt() color(dark) {
 }
 
 // The methane tank's forward dome, plated in steel. Its curve carries on up from the tank wall.
-module forward_dome() color(dome_steel) translate([0, 0, wall_top]) rotate_extrude($fn = segments)
+module forward_dome() made_of("dome") translate([0, 0, wall_top]) rotate_extrude($fn = segments)
     polygon(concat([[0, 0]], [for (i = [0 : 16]) let(a = 90 * i / 16) [R * cos(a), dome_rise * sin(a)]]));
 
 // For printing upside down with the truss open: the dome raised to a flat top level with the top of
 // the truss, tall_dome_top of the hull's radius across, where the stacking pin's hole goes. Its sides
 // leave the tank wall upright, as the real dome's do, and curve in more steeply than 45° (with the
 // default tall_dome_top), so it prints upside down without support.
-module tall_dome() color(dome_steel) {
+module tall_dome() made_of("dome") {
     a = tall_dome_top * R;
     h = height - wall_top;
     rotate_extrude($fn = segments) polygon(concat([[0, wall_top]],
@@ -251,14 +249,14 @@ module thrust_plate() {
     f = plate_flat;
     zc = centre_exit_z + gimbal_drop;
     zi = inner_exit_z + gimbal_drop;
-    color(plate_grey) rotate_extrude($fn = segments) polygon([
+    made_of("aft_shield") rotate_extrude($fn = segments) polygon([
         [0, zc], [centre_r + f, zc], [inner_r - f, zi], [inner_r + f, zi], [outer_r - f, skirt_bottom],
         [R - skirt_wall + 1, skirt_bottom], [R - skirt_wall + 1, band_top], [0, band_top]]);
 }
 
 // The housing over each outer engine's top, on the skirt from its bottom edge up to just below the
 // band's lowest pipe, and the collar the engine hangs from
-module housings() color(dark) for (a = outer_az) rotate([0, 0, az(a)]) {
+module housings() made_of("black") for (a = outer_az) rotate([0, 0, az(a)]) {
     hull() {
         translate([R - 300, -housing[0] / 2, skirt_bottom]) cube([10, housing[0], housing[1]]);
         for (s = [-1, 1]) translate([housing_out - 120, s * (housing[0] / 2 - 120), skirt_bottom])
@@ -272,7 +270,7 @@ module housings() color(dark) for (a = outer_az) rotate([0, 0, az(a)]) {
 // under the thrust plate and are steered by two actuators, which the simple engines leave out.
 module engine_group(azs, r, exit_z, gimballed) for (a = azs) rotate([0, 0, az(a)]) translate([r, 0, exit_z]) {
     raptor_sl(raptor_exit, wall, engine_detail, min_t / 2, $fn = 32);
-    if (gimballed) color(dark) {
+    if (gimballed) made_of("black") {
         translate([0, 0, mount - 10]) cylinder(h = gimbal_drop - mount + 60, d = max(gimbal_d, min_t), $fn = 24);
         if (engine_detail >= 2) for (s = [-1, 1]) rotate([0, 0, 45 * s]) hull() {
             translate([actuator_r[0], 0, actuator_h]) sphere(d = actuator_d, $fn = 12);
@@ -301,7 +299,7 @@ module strut(p, q) hull() for (t = [0, 0.15, 0.85, 1])
 module truss() {
     step = 360 / truss_pairs;                 // degrees between brackets
     da = strut_pair / 2 / strut_r * 180 / PI; // half the pair's spacing at the top, in degrees
-    color(steel) {
+    made_of("steel") {
         for (a = truss_az) {
             strut(strut_point(a + step / 2 - da, ring_bottom), strut_point(a, wall_top));
             strut(strut_point(a + step / 2 + da, ring_bottom), strut_point(a + step, wall_top));
@@ -310,28 +308,28 @@ module truss() {
         if (truss_fill == 2) translate([0, 0, wall_top - 1])
             cylinder(h = height - wall_top + 1, r = strut_r - strut_t / 4, $fn = segments);
     }
-    color(dark) for (a = truss_az) rotate([0, 0, az(a)])
+    made_of("black") for (a = truss_az) rotate([0, 0, az(a)])
         translate([R - 150, -bracket[0] / 2, wall_top - bracket[1]]) cube([250, bracket[0], bracket[1]]);
 }
 
 // A grid fin from gridfins.scad pointing along +X, on a neck from the round bearing it pivots on,
 // with the round port above the bearing. The neck reaches 60 mm into the fin's root plate.
 module mounted_grid_fin() {
-    if (!loose_fins) color(fin_grey) {
+    if (!loose_fins) made_of("grid_fin") {
         translate([R + pod_out, 0, fin_zc]) grid_fin(fin_lattice, min_t, fin_lattice_step);
         translate([R - 100, 0, fin_zc]) rotate([0, 90, 0]) cylinder(h = pod_out + 160, d = max(arm_d, min_t), $fn = 24);
     }
-    color(bearing_bronze) translate([R - 150, 0, fin_zc]) rotate([0, 90, 0]) {
+    made_of("bronze") translate([R - 150, 0, fin_zc]) rotate([0, 90, 0]) {
         cylinder(h = 150 + pod_proud, d = pod_d, $fn = 48);
         cylinder(h = 150 + pod_proud + 80, d = pod_d * 0.65, $fn = 48);
     }
-    color(dark) translate([R - 100, 0, fin_zc + pod_port_up]) rotate([0, 90, 0]) cylinder(h = 180, d = port_d, $fn = 32);
+    made_of("black") translate([R - 100, 0, fin_zc + pod_port_up]) rotate([0, 90, 0]) cylinder(h = 180, d = port_d, $fn = 32);
 }
 
 // The lifting pin under the root of a catch fin pointing along +X: a post hanging from the fin's root
 // triangle, with a steel bar at its foot reaching out toward -Y, which is clockwise round the booster
 // seen from above. The post runs up into the root.
-module lifting_pin() color(pin_steel) {
+module lifting_pin() made_of("steel") {
     w = catch_pin_bar[0];
     translate([R + catch_pin_out - w / 2, catch_post_t / 2, fin_zc - grid_fin_depth(min_t) / 2 - catch_pin_drop]) {
         translate([0, -catch_post_t, 0]) cube([w, catch_post_t, catch_pin_drop + 60]);
@@ -365,7 +363,7 @@ module fin_tab(grow = 0) {
     translate([-t - grow, -w / 2 - grow, -d / 2 - grow]) cube([t + 60 + grow, w + 2 * grow, d + 2 * grow]);
 }
 
-module loose_fin() color(fin_grey) {
+module loose_fin() made_of("grid_fin") {
     grid_fin(fin_lattice, min_t, fin_lattice_step);
     fin_tab();
 }
@@ -399,11 +397,11 @@ module super_heavy() difference() {
         truss();
         for (a = fin_az) rotate([0, 0, az(a)]) mounted_grid_fin();
         if (catch_pins) for (a = catch_fin_az) rotate([0, 0, az(a)]) lifting_pin();
-        color(steel) {
+        made_of("steel") {
             for (a = tall_chine_az) chine(a, tall_chine_top);
             for (a = short_chine_az) chine(a, short_chine_top);
         }
-        color(raceway_steel) raceway();
+        made_of("steel") raceway();
         engines();
     }
     if (pin_d > 0) {
@@ -423,8 +421,9 @@ module cut(z0, z1) intersection() {
 
 // What gets drawn: the loose parts laid flat; one section standing on a flat cut face, the lowest one
 // upside down on its top cut so its engines print upward, the others upright on their bottom cut; or
-// the whole booster, turned upside down for printing with the top of its truss on z = 0 if asked
-scale(1 / model_scale) if (section < 0) loose_fins_flat();
+// the whole booster, turned upside down for printing with the top of its truss on z = 0 if asked.
+// The material setting reaches every part as $material.
+scale(1 / model_scale, $material = material) if (section < 0) loose_fins_flat();
     else if (section > 0 && len(section_z) > 0) {
         bounds = concat([-10000], section_z, [height + 10000]);
         k = min(section, len(section_z) + 1);

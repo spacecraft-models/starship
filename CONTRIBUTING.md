@@ -10,8 +10,9 @@ The Starship and Super Heavy models are OpenSCAD files in `model/`, built from t
 | `model/super_heavy.scad` | The booster | The booster, with its 33 engines and three grid fins |
 | `model/raptor.scad` | The Raptor 3 engines both vehicles use | One sea-level Raptor 3 and one Raptor Vacuum |
 | `model/gridfins.scad` | The booster's grid fin | One grid fin |
+| `model/materials.scad` | The materials the parts are made of, and the colours previews draw them in | A ball of each material, with its name |
 
-The vehicles pull in the part files with `use <raptor.scad>` and `use <gridfins.scad>`, so a change to `raptor.scad` changes the engines on both vehicles, and a change to `gridfins.scad` changes the booster's fins.
+The vehicles pull in the part files with `use <raptor.scad>` and `use <gridfins.scad>`, so a change to `raptor.scad` changes the engines on both vehicles, and a change to `gridfins.scad` changes the booster's fins. Every file pulls in `materials.scad`; see [Materials and realistic renders](#materials-and-realistic-renders).
 
 ## Every .scad file must open in OpenSCAD
 
@@ -20,7 +21,8 @@ Each file in `model/` has to open in OpenSCAD 2021.01, the version the models ar
 - Use only what OpenSCAD 2021.01 supports, not features from newer development snapshots.
 - Pull a part file in with `use`, never `include`. `use` brings in a file's modules and functions but not its top-level geometry, so the call that draws the part when its file is opened alone stays out of the vehicle.
 - Keep every part file drawing its part when it is opened on its own, so it can be checked by itself.
-- Put the settings someone might want to change at the top of the file, in the Customizer sections the files already use: `[Print]` for print settings, `[From dimensions.md]` for values taken from dimensions.md (comments mark the estimated ones), `[Estimates]` for guesses, and `[Hidden]` for derived values and tables. Everything but `[Hidden]` then shows up in OpenSCAD's Customizer panel.
+- Put the settings someone might want to change at the top of the file, in the Customizer sections the files already use: `[Print]` for print settings, `[Materials]` for the `material` setting, `[From dimensions.md]` for values taken from dimensions.md (comments mark the estimated ones), `[Estimates]` for guesses, and `[Hidden]` for derived values and tables. Everything but `[Hidden]` then shows up in OpenSCAD's Customizer panel.
+- Draw every solid part inside `made_of("steel")`, or another of the materials in `materials.scad`, rather than `color()`. Leave parts that are cut away with `difference()` outside it, so they cut every material. A new material goes in the table in `materials.scad` and in the list on the `material` setting of each file that uses it, which is where the render script looks for a model's materials.
 - Model in full-size millimetres with Z up. The comment at the top of each file says where z = 0 is; the ship stacks on the booster at z = 72300.
 - Detail that makes the STL export slow can be drawn only in previews, inside `if ($preview)`, as the grid fins' notched plate edges are. It then shows in previews and PNGs but not in the STL.
 - Anything that changes a model to make it easier to print is a `[Print]` setting whose default leaves the model true to size, so the full-size model never changes. See [Printing](#printing).
@@ -33,7 +35,7 @@ Open a file from OpenSCAD's File menu, or from a terminal:
 openscad model/starship.scad
 ```
 
-- F5 (Design → Preview) draws the model quickly, in colour.
+- F5 (Design → Preview) draws the model quickly, each part in its material's colour.
 - F6 (Design → Render) works out the exact geometry an STL will have. That takes a minute or more for the vehicles, and shows the result in one colour.
 - Left-drag rotates the view, right-drag pans, and the scroll wheel zooms. View → View All fits the whole model in the window.
 - Window → Customizer lists the settings from the top of the file with their comments (untick Window → Hide Customizer if the panel isn't showing). Changing one re-previews the model without editing the file.
@@ -87,6 +89,58 @@ openscad -D model_scale=300 -D nozzle_wall=0 -D fin_lattice=false -o renders/sup
 ### PNGs need a display
 
 OpenSCAD draws PNGs with OpenGL, so it needs a display even from the command line. Over SSH, put `DISPLAY=:0` in front of the command or the render script to borrow the desktop's display, which works when you're logged in to that desktop as the same user. Without a display, OpenSCAD prints "Unable to open a connection to the X server" and leaves an empty PNG.
+
+## Materials and realistic renders
+
+OpenSCAD has no materials, only flat colours, and those show only in previews: a full render (F6) and an STL come out in one colour. So the models name what each part is made of, and a script turns those names into realistic surfaces in [Blender](https://www.blender.org/), the free 3D renderer.
+
+### The materials
+
+`model/materials.scad` lists them, with the colour each is drawn in by previews. The previews have no shine, so the dark materials are drawn lighter than they are, to keep their shapes readable.
+
+| Material | What it is |
+|---|---|
+| `steel` | Bare stainless steel: the hulls, chines, raceways, truss and fittings |
+| `tiles` | The ship's black hexagonal heat-shield tiles |
+| `black` | Black-coated parts: the booster's aft skirt, its conduits and engine housings, the gimbal blocks, the truss's brackets and the ship's drogue cones |
+| `aft_shield` | The heat shield under the booster's thrust plate, and the ship's engine bay |
+| `dome` | The booster's forward dome inside the truss, a duller steel than the hull |
+| `grid_fin` | The booster's grid fins: dark, heat-stained steel |
+| `bronze` | The grid fins' bearings |
+| `nozzle` | Raptor nozzles: dark satin metal |
+| `engine` | Raptor chambers, powerheads and plumbing |
+| `nozzle_extension` | The Raptor Vacuum's lighter nozzle extension |
+
+Each file has a `material` setting, in the `[Materials]` section of the Customizer. "all", the default, draws the whole model, as for printing. Any other choice draws only the parts made of that material, in a preview or an export, which is how each material becomes a mesh of its own:
+
+```bash
+openscad -D 'material="tiles"' --export-format binstl -o renders/starship/starship_tiles.stl model/starship.scad
+```
+
+To see the shapes of dark parts in a preview, recolour them on the command line with `$colours`, a list of materials and colours, for example `-D '$colours=[["tiles", [0.62, 0.63, 0.68]]]'`.
+
+### Rendering in Blender
+
+```bash
+scripts/render_blender.sh model/starship.scad
+```
+
+That exports the ship once per material, as binary STLs in `renders/starship/materials/`, then has Blender build a scene: each mesh gets a realistic surface, lit by a clear sky and the sun over flat ground, and the steel mirrors one of the photographed skies that come with Blender, as the real hull mirrors its surroundings. It writes into `renders/starship/blender/`:
+
+- a PNG from each of several views: for the ship `leeward.png` and `windward.png` (the whole ship, as a photographer on the ground sees it), `nose.png` and `aft.png` (the engines from below); for the booster `tower_side.png`, `rudder_side.png`, `engines.png` and `truss_and_fins.png`; for the stack `stack.png`, `stack_windward.png` and `hot_staging.png`
+- `starship.blend`, the scene, to open in Blender and render from any angle
+- `starship.glb`, the model with each material's colour, shine and roughness, for other 3D viewers and programs. The tiles' hexagon pattern and the steel's weld seams are drawn by Blender as the image renders, so they aren't in it.
+
+Several models go in one scene, each raised by the height after `@`, in mm. This stacks the ship on the booster and writes into `renders/super_heavy_and_starship/`:
+
+```bash
+scripts/render_blender.sh model/super_heavy.scad model/starship.scad@72300
+```
+
+- The script needs Blender 4.0 or later. On Ubuntu, `sudo snap install blender --classic` installs the latest.
+- The meshes are exported with `$preview` set to true, so they keep the preview-only detail, such as the grid fins' teeth. They are exported again only when a file in `model/` has changed since. The exports run one at a time: about a minute for the ship and seven for the booster, which needs up to 2 GB of memory.
+- Blender renders on the processor, leaving one core free: about a minute a view, so four or five minutes for each vehicle. Environment variables change that: `VIEWS=nose,aft` renders only those views, `SAMPLES=32` renders faster but grainier (the default is 128), and `SCALE=50` renders at half size. `BLENDER` names the blender command, if it isn't `blender`.
+- The looks are in `scripts/render_blender.py`, matched to photos of the V3 vehicles: mirror-bright steel, which reflects the sky above and the ground below, with a slightly different shade on each ring and darker weld seams between rings; black hexagonal tiles about 0.25 m across, with points at top and bottom and a light pin near each one's top corner; and the booster's black skirt, charcoal engines and dark grid fins. The ring seams are about 1.83 m apart on the ship and 1.86 m on the booster, as dimensions.md has them.
 
 ## Printing
 

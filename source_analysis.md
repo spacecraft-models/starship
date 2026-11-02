@@ -106,6 +106,8 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Lifting pin, 270° fin | Full-size copy, against the hull's scale | A short post down from the root triangle, just outboard of the bearing, with a bar at its foot pointing away from the camera, toward the tower side. The rudder fin's root has nothing like it. See [Differences](#differences) for the bar's size. | Catch and lift points; `catch_pin_out`, `catch_pin_reach`, `catch_pin_bar`, `catch_pin_drop` |
 | Zigzag strip | Offset across the hull, and width | About 318° ± 2°, about 0.15 m wide, from the top of the tank wall to at least z ≈ 58 m (the bottom of the frame) | Lines down the side (not modelled) |
 | Dark patches by the pods | Looked at closely | Flat stains or reflections, not hardware | (none) |
+| Ring seams | Five weld seams down the tank wall, in two strips either side of the zigzag strip, against the hull's scale. The seams' curve gives the camera's angle: their slope against the offset from the hull's centre gives sin 23° (± 1.5°). | 252 px apart (251 px and 253 px in the two strips), so 252 / (147 × cos 23°) ≈ 1.86 m ± 0.05 m. A seam runs level with the bracket tops, at the top of the tank wall. | Ring height (dimensions.md); the booster's ring seams in `scripts/render_blender.py` |
+| Finishes | Looked at | The struts bright steel. The dome steel too, but duller and paler than the hull. The brackets black. The grid fins dark grey to black, with metallic edges, and the bearings' toothed rims bronze-coloured. | The `steel`, `dome`, `black`, `grid_fin` and `bronze` materials (`materials.scad`, `scripts/render_blender.py`) |
 
 #### First V3 grid fin, hanging from a crane
 
@@ -193,6 +195,7 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Skirt openings | Scaled from the exits | About 0.15 m wide and 0.24 m tall, centred at z ≈ 3.05 m, between the housings | `skirt_opening`, `opening_z` |
 | Conduit band | Scaled from the exits | Pipes round the skirt at z ≈ 3.53 m (the biggest, 0.14 m), 3.88, 4.43, 4.68 and 4.91 m; 40 junction boxes, one every 9°, from z ≈ 3.88 to 4.33 m, each 0.22 m wide and 0.15 m deep, linked by three 0.05 m pipes at z ≈ 4.0, 4.1 and 4.2 m. The band stands up to 0.15 m off the skirt, so it is about 9.3 m across. | `band_pipes`, `box_z`, `box_size`, `band_top` |
 | Which way the engines face | The painted numbers and "TCA SN" serials, here and round the ring | Every engine's front faces away from the booster's axis | The engine clocking in `super_heavy.scad` |
+| Finishes | Looked at | The skirt, the conduit band and its boxes, and the housings black. The Raptors dark charcoal with a satin sheen, the nozzles a little lighter than the powerheads, with white painted numbers. | The `black`, `nozzle` and `engine` materials |
 | Raptor plumbing | One outer engine square on, scaled to its 1.3 m exit (± 0.03 m) | The two coolant pipes, the manifold ring (0.82 m across at h ≈ 1.17 m to 1.26 m), the ring round the throat (0.55 m across), the two chamber rings, the two shielded valves and the ring of ports at h ≈ 2.47 m, as listed in dimensions.md's "Plumbing on the flight engines" | `raptor.scad` `coolant_pipes`, `core_rings`, `valve_pods`, `valve_lines`, `powerhead_ports`, the manifold ring in `sl_nozzle` |
 
 #### Booster 20's engines at liftoff
@@ -219,7 +222,7 @@ The photos belong to their photographers and publishers, so they aren't in this 
 
 | Quantity | How | Result | Used in |
 |---|---|---|---|
-| Thrust plate's underside | Looked at | A speckled tiled surface between the engines, starting at the skirt's bottom edge | Thrust plate |
+| Thrust plate's underside | Looked at | A speckled tiled surface between the engines, dark with bronze-coloured flecks, starting at the skirt's bottom edge | Thrust plate; the `aft_shield` material |
 | Engine mounts | Looked at | Each gimballed engine hangs from a dark block above its top plate; one block carries the painted number 467 | Thrust plate; `gimbal_d` |
 | Skirt, housings and band | As in Booster 20's aft end | The same layout seen from below | Thrust plate |
 
@@ -330,6 +333,7 @@ The photos belong to their photographers and publishers, so they aren't in this 
 | Ports | Offsets and heights | A small round port at about 185°, z ≈ 34.6 m. Two round flanged ports at about 211° and 224°, z ≈ 31.3 m, which may be roll thrusters. | Vents, RCS, cameras (not modelled) |
 | Catch pins | The full-size copy, from close below | The pins' shape under their covers, used with the rollout photo and the close-up below | Catch and lift points |
 | Slots below the door | Looked at | A band of vertical slots round the leeward side just below the door (dimensions.md puts it at z ≈ 32.3 to 33.3 m without naming its photo) | Payload bay (not modelled) |
+| Steel finish | Looked at | Mirror-bright, reflecting the sky above and the ground below. Weld seams run between the rings, and each ring is a slightly different shade. | The `steel` material and its ring seams (`scripts/render_blender.py`) |
 
 #### A V3 ship's catch pin
 
@@ -342,6 +346,7 @@ The photos belong to their photographers and publishers, so they aren't in this 
 |---|---|---|---|
 | Fairing width | Scaled from the tiles | About 0.55 m across its sloping top and outer end, and about 1.5 m where its underside meets the hull, its sides sloping out to the hull | `catch_w` |
 | Steel pad | Scaled from the tiles | About 0.33 m wide and 0.1 m tall. See [Differences](#differences): checked again, it is 160 px × 50 px, 0.30 m × 0.09 m. | `catch_pad` |
+| Tiles | Looked at, and the dark gaps found along rows of tiles | Regular hexagons with their points at top and bottom, in level rows about 130 px apart. The gaps are about 4 px, 3% of a tile, so roughly 7 mm. A light pin sits near each tile's top corner. The black glaze reflects the sky, and the tiles vary a little in shade. | Heat shield; the `tiles` material (`TILE_PITCH`, `TILE_GAP` in `scripts/render_blender.py`) |
 
 ### Aft end and docking ports
 

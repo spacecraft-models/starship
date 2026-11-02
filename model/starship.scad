@@ -7,8 +7,10 @@
 // [Estimates] aren't in dimensions.md, so they are guesses worth adjusting.
 // Azimuths are dimensions.md's: 0 is the windward (tiled) centreline, increasing counterclockwise
 // seen from above. Windward faces +Y, so the default render views look at the steel leeward side.
+// Each part's material, and its colour in previews, comes from materials.scad.
 
 use <raptor.scad>
+use <materials.scad>
 
 /* [Print] */
 // Print at 1:model_scale. 1 is full size; 300 makes the ship 174 mm tall.
@@ -46,6 +48,10 @@ loose_flaps = false;
 // it in its slot
 tab_depth = 3; // [1:0.5:10]
 fit_clearance = 0.15; // [0:0.05:0.5]
+
+/* [Materials] */
+// Draws only the parts made of one material, from materials.scad. "all" draws the whole ship.
+material = "all"; // [all, steel, tiles, black, aft_shield, nozzle, engine, nozzle_extension]
 
 /* [From dimensions.md] */
 height = 52100;
@@ -169,14 +175,7 @@ nose_base = rings * ring_h; // where the nosecone leaves the cylinder
 nose_len = height - nose_base;
 roof = rvac_exit_z + raptor_vac_mount(rvac_exit, raptor_exit); // the engine bay's roof
 flap_embed = skirt_wall / 2; // how far flap roots sink into the hull
-steel = [0.78, 0.79, 0.81];
-raceway_steel = [0.66, 0.67, 0.69];
-tiles = [0.2, 0.2, 0.22];
-bay_grey = [0.5, 0.5, 0.52];
-seam_dark = [0.25, 0.25, 0.27];
-fitting_grey = [0.55, 0.56, 0.58];
-housing_grey = [0.42, 0.43, 0.46];
-drogue_grey = [0.3, 0.34, 0.39];
+seam_dark = [0.25, 0.25, 0.27]; // the door's groove in previews
 
 function az(a) = a + 90; // dimensions.md azimuth to OpenSCAD's angle from +X
 
@@ -211,21 +210,22 @@ whole = concat(bay_inside, [[R, 0]], ogive(0, cap_h, 40), tip_cap());
 
 // A slice of the hull turned all the way round, tiled for `tiled` degrees either side of windward
 module tiled_turn(outline, tiled) {
-    color(tiles) rotate([0, 0, az(-tiled)]) rotate_extrude(angle = 2 * tiled, $fn = segments) polygon(outline);
-    color(steel) rotate([0, 0, az(tiled)]) rotate_extrude(angle = 360 - 2 * tiled, $fn = segments) polygon(outline);
+    made_of("tiles") rotate([0, 0, az(-tiled)]) rotate_extrude(angle = 2 * tiled, $fn = segments) polygon(outline);
+    made_of("steel") rotate([0, 0, az(tiled)]) rotate_extrude(angle = 360 - 2 * tiled, $fn = segments) polygon(outline);
 }
 
-// The hull. Previews colour its tiled side and give the engine bay one colour, using a skin over
-// the barrel; the STL export gets one smooth solid, since STL has no colour.
+// The hull. Previews, and exports of a single material, split it into its tiled side, its steel side
+// and the engine bay, using a skin over the barrel; the STL of the whole ship gets one smooth solid,
+// since STL has no colour.
 module body()
-    if ($preview) {
+    if ($preview || drawing_material() != "all") {
         skin = skirt_wall / 3;
         tiled_turn([[R - skin, 0], [R, 0], [R, nose_base], [R - skin, nose_base]], tile_line);
-        color(bay_grey) rotate_extrude($fn = segments)
+        made_of("aft_shield") rotate_extrude($fn = segments)
             polygon(concat(bay_inside, [[R - skin, 0], [R - skin, nose_base], [0, nose_base]]));
         if (step_h > 0) tiled_turn(nose_band, tile_line);
         tiled_turn(nose_lower, nose_tile_line);
-        color(tiles) rotate_extrude($fn = segments) polygon(nose_top);
+        made_of("tiles") rotate_extrude($fn = segments) polygon(nose_top);
     } else rotate_extrude($fn = segments) polygon(whole);
 
 module both_sides() {
@@ -297,10 +297,10 @@ module fwd_flap_x() {
     turn = (360 - fwd_flap_angle) / 2 - fwd_hinge_az;
     rotate([0, 0, az(-fwd_hinge_az)]) {
         // The strip follows the nose's surface through the hinge's ends and middle
-        color(tiles) hull() for (p = [p0, [nose_r(zm - nose_base), 0, zm], p1]) translate(p)
+        made_of("tiles") hull() for (p = [p0, [nose_r(zm - nose_base), 0, zm], p1]) translate(p)
             scale([fwd_static_aero[1], fwd_static_aero[0] / 2, fwd_static_aero[1]]) sphere(1, $fn = 24);
         if (!loose_flaps) translate(p0) rotate(a = -turn, v = p1 - p0) translate(-p0) {
-            for (side = [[tiles, 0], [steel, -1]]) color(side[0]) intersection() {
+            for (side = [["tiles", 0], ["steel", -1]]) made_of(side[0]) intersection() {
                 rounded_plate(f, max(fwd_flap_thickness, min_t) / 2);
                 translate([0, side[1] * 2000, nose_base]) cube([2 * R, 2000, nose_len]); // the windward or leeward half
             }
@@ -341,7 +341,7 @@ module loose_flaps_flat() {
     z0 = min([for (p = f) p[1]]);
     w = max([for (p = f) p[0]]) - x0 + 1000;
     t = max(fwd_flap_thickness, min_t);
-    for (i = [0, 1]) translate([i * w - x0, -z0, t / 2]) rotate([-90, 0, 0]) color(tiles) loose_flap();
+    for (i = [0, 1]) translate([i * w - x0, -z0, t / 2]) rotate([-90, 0, 0]) made_of("tiles") loose_flap();
 }
 
 // Holes for the pins that line up the sections at each cut: two at different radii, so the sections
@@ -386,14 +386,14 @@ module docking_port(p) {
     len = drogue_depth + 100; // length of the drogue's body
     // Local z runs from the mouth back toward the hull (+Y), and local -y is down
     translate([x, -sqrt(R * R - x * x) - p[2], p[1]]) rotate([-90, 0, 0]) rotate([0, 0, 180]) {
-        color(housing_grey) difference() {
+        made_of("steel") difference() {
             cylinder(h = p[2] + 1500, d = port_d, $fn = 48);
             translate([0, 0, -1]) linear_extrude(drogue_recess + len + 1) {
                 circle(r = bore, $fn = 48);
                 translate([-port_notch / 2, -port_d]) square([port_notch, port_d]);
             }
         }
-        color(drogue_grey) translate([0, 0, drogue_recess]) {
+        made_of("black") translate([0, 0, drogue_recess]) {
             difference() {
                 cylinder(h = len, r = bore + 1, $fn = 48);
                 translate([0, 0, -1]) cylinder(h = drogue_depth + 1, r1 = drogue_d / 2 - 20, r2 = drogue_hole / 2, $fn = 48);
@@ -425,12 +425,12 @@ module catch_pin() {
     x1 = R + catch_out;
     slope = (catch_z[1] - catch_z[0] - catch_end) / (x1 - rh);
     top = catch_z[1] + (rh - back) * slope;
-    color(tiles) hull() {
+    made_of("tiles") hull() {
         translate([back, -catch_w[0] / 2, catch_z[0]]) cube([1, catch_w[0], 1]);
         translate([back, -catch_w[1] / 2, top - 1]) cube([1, catch_w[1], 1]);
         translate([x1 - 1, -catch_w[1] / 2, catch_z[0]]) cube([1, catch_w[1], catch_end]);
     }
-    color(fitting_grey) translate([x1 - catch_pad_depth, -catch_pad[0] / 2, catch_z[0] - catch_pad[1]])
+    made_of("steel") translate([x1 - catch_pad_depth, -catch_pad[0] / 2, catch_z[0] - catch_pad[1]])
         cube([catch_pad_depth, catch_pad[0], catch_pad[1] + 1]);
 }
 
@@ -457,10 +457,10 @@ module starship() difference() {
             for (p = docking_ports) docking_port(p);
             translate([0, 0, -1]) cylinder(r = R - 150, h = height, $fn = segments);
         }
-        color(fitting_grey) qd_plate();
+        made_of("steel") qd_plate();
         if (catch_pins) for (a = catch_az) rotate([0, 0, az(a)]) catch_pin();
         // The aft flaps' rounded roots are trimmed where they would reach into the engine bay
-        color(tiles) both_sides() {
+        made_of("tiles") both_sides() {
             difference() {
                 aft_flap();
                 translate([0, 0, -1]) cylinder(r = R - skirt_wall / 2, h = roof + 1, $fn = segments);
@@ -468,8 +468,8 @@ module starship() difference() {
             aft_hinge_cover();
         }
         both_sides() fwd_flap_x();
-        color(raceway_steel) for (s = [-1, 1]) raceway(180 + s * raceway_az[0], 180 + s * raceway_az[1]);
-        if (fill_engine_bay) color(bay_grey) cylinder(r = R - bay_wall + 1, h = roof + 1, $fn = segments);
+        made_of("steel") for (s = [-1, 1]) raceway(180 + s * raceway_az[0], 180 + s * raceway_az[1]);
+        if (fill_engine_bay) made_of("aft_shield") cylinder(r = R - bay_wall + 1, h = roof + 1, $fn = segments);
         else engines();
     }
     if (pin_d > 0) {
@@ -488,8 +488,8 @@ module cut(z0, z1) intersection() {
 
 // What gets drawn: the loose parts laid flat; one section standing on a flat cut face, the lowest one
 // upside down on its top cut so its engines print upward from the bay's roof, the others upright on
-// their bottom cut; or the whole ship
-scale(1 / model_scale) if (section < 0) loose_flaps_flat();
+// their bottom cut; or the whole ship. The material setting reaches every part as $material.
+scale(1 / model_scale, $material = material) if (section < 0) loose_flaps_flat();
     else if (section > 0 && len(section_z) > 0) {
         bounds = concat([-10000], section_z, [height + 10000]);
         k = min(section, len(section_z) + 1);
