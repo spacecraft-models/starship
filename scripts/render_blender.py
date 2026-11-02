@@ -384,6 +384,7 @@ def make_world():
         # on matt surfaces see the plain sky above
         env = g.node('ShaderNodeTexEnvironment')
         env.image = bpy.data.images.load(path)
+        env.image.pack()  # kept inside the .blend, so it opens the same on other computers
         mapping = g.node('ShaderNodeMapping')
         g.put(mapping.inputs['Vector'], d)
         g.put(mapping.inputs['Rotation'], (0.0, 0.0, math.radians(REFLECTIONS[1])))
@@ -465,9 +466,9 @@ def fit(corners, target, direction, half_w, half_h):
     return need
 
 
-def render_view(scene, cam, sun, name, view, verts, ground_z, ground, out):
+def render_view(scene, cam, sun, name, view, verts, ground_z, ground, out, render=True):
     """Points the camera as view says at the vertices verts (or those between its heights), lights them
-    from the side, and renders out/<name>.png."""
+    from the side, and renders out/<name>.png, unless render is False."""
     if 'z' in view:
         verts = verts[(verts[:, 2] >= view['z'][0]) & (verts[:, 2] <= view['z'][1])]
     lo, hi = verts.min(axis=0), verts.max(axis=0)
@@ -501,6 +502,8 @@ def render_view(scene, cam, sun, name, view, verts, ground_z, ground, out):
     scene.render.resolution_x, scene.render.resolution_y = w, h
     if ground is not None:
         ground.hide_render = bool(eye[2] < ground_z + 0.5)  # leave it out when looking up from below it
+    if not render:
+        return
     scene.render.filepath = os.path.join(out, name + '.png')
     start = time.time()
     bpy.ops.render.render(write_still=True)
@@ -533,6 +536,9 @@ def main():
     first = MODELS.get(specs[0].split(':')[0], OTHER)
     views = STACK_VIEWS if len(specs) > 1 else first['views']
     wanted = [v for v in os.environ.get('VIEWS', '').split(',') if v]
+    render_none = wanted == ['none']  # only save the scene
+    if render_none:
+        wanted = []
     for v in wanted:
         if v not in views:
             sys.exit(f'no view called {v}; the views are {", ".join(views)}')
@@ -599,11 +605,31 @@ def main():
     export_glb(everything, os.path.join(out, base + '.glb'))
 
     for name, view in views.items():
+        if render_none:  # the camera and sun as the first view has them, with nothing rendered
+            render_view(scene, cam, sun, name, view, verts, ground_z, ground, out, render=False)
+            break
         if wanted and name not in wanted:
             continue
         render_view(scene, cam, sun, name, view, verts, ground_z, ground, out)
-    # Save again, with the camera left at the last view
+    # Save again, with the camera left at the last view, opening through it
+    open_through_camera()
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, base + '.blend'), compress=True)
+
+
+def open_through_camera():
+    """Makes the saved file open in Blender looking through the camera, with the materials showing
+    (Material Preview; the Rendered view and F12 show the full look)."""
+    for screen in bpy.data.screens:
+        for area in screen.areas:
+            if area.type != 'VIEW_3D':
+                continue
+            space = area.spaces.active
+            space.clip_end = 10000.0
+            space.shading.type = 'MATERIAL'
+            space.shading.use_scene_world = True
+            space.shading.use_scene_lights = True
+            if space.region_3d is not None:
+                space.region_3d.view_perspective = 'CAMERA'
 
 
 def export_glb(objects, path):

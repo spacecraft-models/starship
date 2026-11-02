@@ -129,7 +129,7 @@ scripts/render_blender.sh model/starship.scad
 That exports the ship once per material, as binary STLs in `renders/starship/materials/`, then has Blender build a scene: each mesh gets a realistic surface, lit by a clear sky and the sun over flat ground, and the steel mirrors one of the photographed skies that come with Blender, as the real hull mirrors its surroundings. It writes into `renders/starship/blender/`:
 
 - a PNG from each of several views: for the ship `leeward.png` and `windward.png` (the whole ship, as a photographer on the ground sees it), `nose.png` and `aft.png` (the engines from below); for the booster `tower_side.png`, `rudder_side.png`, `engines.png` and `truss_and_fins.png`; for the stack `stack.png`, `stack_windward.png` and `hot_staging.png`
-- `starship.blend`, the scene, to open in Blender and render from any angle
+- `starship.blend`, the scene, to open in Blender and render from any angle. It holds everything it needs, the sky image included, so it can be copied to another computer and opened there with File → Open. It opens looking through the camera, in Material Preview; switch the viewport to Rendered, or press F12, to see the full look. It is saved in the format of the Blender that made it, so open it in the same version or a newer one where you can.
 - `starship.glb`, the model with each material's colour, shine and roughness, for other 3D viewers and programs. The tiles' hexagon pattern and the steel's weld seams are drawn by Blender as the image renders, so they aren't in it.
 
 Several models go in one scene, each raised by the height after `@`, in mm. This stacks the ship on the booster and writes into `renders/super_heavy_and_starship/`:
@@ -140,7 +140,7 @@ scripts/render_blender.sh model/super_heavy.scad model/starship.scad@72300
 
 - The script needs Blender 4.0 or later. On Ubuntu, `sudo snap install blender --classic` installs the latest.
 - The meshes are exported with `$preview` set to true, so they keep the preview-only detail, such as the grid fins' teeth. They are exported again only when a file in `model/` has changed since. The exports run one at a time: about a minute for the ship and seven for the booster, which needs up to 2 GB of memory.
-- Blender renders on the processor, leaving one core free: about a minute a view, so four or five minutes for each vehicle. Environment variables change that: `VIEWS=nose,aft` renders only those views, `SAMPLES=32` renders faster but grainier (the default is 128), and `SCALE=50` renders at half size. `BLENDER` names the blender command, if it isn't `blender`.
+- Blender renders on the processor, leaving one core free: about a minute a view, so four or five minutes for each vehicle. Environment variables change that: `VIEWS=nose,aft` renders only those views, `VIEWS=none` only saves the `.blend` and `.glb`, `SAMPLES=32` renders faster but grainier (the default is 128), and `SCALE=50` renders at half size. `BLENDER` names the blender command, if it isn't `blender`.
 - The looks are in `scripts/render_blender.py`, matched to photos of the V3 vehicles: mirror-bright steel, which reflects the sky above and the ground below, with a slightly different shade on each ring and darker weld seams between rings; black hexagonal tiles about 0.25 m across, with points at top and bottom and a light pin near each one's top corner; and the booster's black skirt, charcoal engines and dark grid fins. The ring seams are about 1.83 m apart on the ship and 1.86 m on the booster, as dimensions.md has them.
 
 ## Printing

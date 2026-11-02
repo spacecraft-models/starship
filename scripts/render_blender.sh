@@ -10,9 +10,10 @@
 # Each mesh is a binary STL in renders/<model>/materials/, exported with $preview true, so it keeps
 # the preview-only detail such as the grid fins' teeth, and exported again only when a file in
 # model/ has changed since. The exports run one after the other; the booster's take about 7 minutes.
-# Settings, as environment variables: VIEWS (comma-separated view names, default all of them),
-# SAMPLES (render samples per pixel, default 128), SCALE (percentage of the full image size, default
-# 100; 50 makes quick drafts), BLENDER (the blender command, default blender).
+# Settings, as environment variables: VIEWS (comma-separated view names, default all of them, or
+# none to save the .blend and .glb without rendering), SAMPLES (render samples per pixel, default
+# 128), SCALE (percentage of the full image size, default 100; 50 makes quick drafts), BLENDER (the
+# blender command, default blender).
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 root="$(dirname "$here")"
